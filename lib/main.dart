@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-
+import './Services/RESTConnection.dart';
+import 'Services/ObjectService.dart';
+import 'Services/ElementService.dart';
+import 'Objects/Element.dart' as Elements;
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -53,6 +56,13 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
+      String body ='{\"MDX\": \"SELECT {[actvsbud].[Actual]} ON COLUMNS, {[month].[jan]} ON ROWS FROM [PNLCube]\"}';
+      RESTConnection restConnection = RESTConnection.initialize("https", "10.113.177.224", 8010,  "admin", "apple", true, "", false, false);
+      Map<String,dynamic> testMap = {'Name':'next','UniqueName':'uName','Type':'Numeric','Index':0,'Level':0};
+      Elements.Element element = Elements.Element.fromJson('account1', 'account1',testMap);
+      var printout = ElementService().getElementAttributes(element);
+      print(printout.then((s)=>print(s)));
+
       _counter++;
     });
   }
