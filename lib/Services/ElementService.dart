@@ -35,6 +35,7 @@ class ElementService extends ObjectService {
   }
 
   Future<Map<String, dynamic>> getElementAttributes(Element element) async {
+    //TODO get this class to dimension service class
     var bodyReturned = await restConnection.runGet(
         'api/v1/Dimensions(\'${element.dimension}\')/Hierarchies(\'${element.hierarchy}\')/ElementAttributes');
     var decodedJson = jsonDecode(bodyReturned);
@@ -50,5 +51,51 @@ class ElementService extends ObjectService {
           {tempList[0]: tempList[1].replaceRange(0, 'Type: '.length, '')});
     }
     return nameTypeMap;
+  }
+
+  Future<Map<String, dynamic>> getMembersUnderConsolidation(Element element,
+      {int maxDepth = 99, bool leavesOnly = false}) async {
+    /// funtion gets elements that lies underneath element, by defualt
+    /// user do not need to specify other parameter
+    /// additional parameters
+    /// maxDepth - by default 99, specifies how deep process should look for elements
+    /// leavesOnly - if true gets only leaves
+
+    String request = element.createTM1Path() + '(\'${element.name}\')';
+    Map<String, dynamic> parametersMap = {};
+    parametersMap.addAll({'\$select': 'Name,Type'});
+    var expandString = 'Components(';
+    for (int i = 0; i < maxDepth; i++) {
+      expandString = expandString + '\$select=Name,Type;\$expand=Components(';
+    }
+    expandString =
+        expandString.substring(0, expandString.length - 1) + ')' * maxDepth;
+    parametersMap.addAll({'\$expand': expandString});
+    var bodyReturned =
+        await restConnection.runGet(request, parameters: parametersMap);
+    Map<String, dynamic> decodedJson = jsonDecode(bodyReturned);
+    Map<String, dynamic> listOfElement = {};
+    void getMembers(Map<String, dynamic> decodedJson) {
+      if (decodedJson['Type'] == 'Numeric') {
+        listOfElement.addAll({decodedJson['Name']: decodedJson['Type']});
+      } else if (decodedJson['Type'] == 'Consolidated') {
+        if (decodedJson.containsKey('Components')) {
+          for (var component in decodedJson['Components']) {
+            if (leavesOnly) {
+              if (component['Type'] == 'Numeric' ||
+                  component['Type'] == 'Text') {
+                listOfElement.addAll({component['Name']: component['Type']});
+              }
+            } else {
+              listOfElement.addAll({component['Name']: component['Type']});
+            }
+
+            getMembers(component);
+          }
+        }
+      }
+    }
+
+    return listOfElement;
   }
 }

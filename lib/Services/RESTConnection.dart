@@ -69,7 +69,7 @@ class RESTConnection {
           namespace,
           ssl,
           CamNameSpace);
-      print('new connection made');
+
       return restConnection;
 
     }
@@ -102,6 +102,7 @@ class RESTConnection {
       return true;
     };
     Uri tempUrl = url.replace(path: baseURL);
+    print(tempUrl);
     if (parameters != null) {
       tempUrl = _replaceUnwantedStrings(tempUrl, parameters, baseURL);
     }
@@ -110,6 +111,7 @@ class RESTConnection {
     var request = await client.getUrl(tempUrl);
     _addHeaders(request);
     var response = await request.close();
+
     var responseBody = await response.transform(Utf8Decoder()).join();
     return responseBody;
   }
@@ -131,9 +133,9 @@ class RESTConnection {
     request.headers.contentLength = body.length;
     request.write(body);
     var response = await request.close();
-    print(response);
+    /*print(response);
     print(body);
-    print(response.statusCode);
+    print(response.statusCode);*/
     var responseBody = await response.transform(Utf8Decoder()).join();
     return responseBody;
   }
