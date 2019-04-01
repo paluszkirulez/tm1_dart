@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tm1_dart/Services/HierarchyService.dart';
 import './Services/RESTConnection.dart';
 import 'Services/ObjectService.dart';
 import 'Services/ElementService.dart';
@@ -51,16 +52,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
+      String ip = "10.113.152.189";
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       String body ='{\"MDX\": \"SELECT {[actvsbud].[Actual]} ON COLUMNS, {[month].[jan]} ON ROWS FROM [PNLCube]\"}';
-      RESTConnection restConnection = RESTConnection.initialize("https", "10.113.149.119", 8010,  "admin", "apple", true, "", false, false);
+      RESTConnection restConnection = RESTConnection.initialize("https", ip, 8010,  "admin", "apple", true, "", false, false);
       Map<String,dynamic> testMap = {'Name':'Gross Margin','UniqueName':'uName','Type':'Numeric','Index':0,'Level':0};
       Elements.Element element = Elements.Element.fromJson('account1', 'account1',testMap);
-      var printout = ElementService().getMembersUnderConsolidation(element,maxDepth: 99,leavesOnly: true);
+      var printout = HierarchyService().getHierarchy('account1', 'account1');
       print(printout.then((s)=>print(s)));
 
       _counter++;

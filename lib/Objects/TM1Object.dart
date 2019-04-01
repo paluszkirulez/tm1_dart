@@ -1,5 +1,6 @@
 abstract class TM1Object{
   String name;
+  final String classType = '';
 
 
   String body();

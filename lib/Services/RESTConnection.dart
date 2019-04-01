@@ -71,7 +71,6 @@ class RESTConnection {
           CamNameSpace);
 
       return restConnection;
-
     }
     return restConnection;
   }
@@ -94,8 +93,10 @@ class RESTConnection {
     return tempUrl;
   }
 
-  Future<String> runGet(String baseURL,
+  Future<HttpClientResponse> runGet(String baseURL,
       {Map<String, dynamic> parameters}) async {
+    //TODO function should resooult with just response and additional function should decode it
+
     HttpClient client = new HttpClient();
     client.badCertificateCallback =
         (X509Certificate cert, String host, int port) {
@@ -112,11 +113,11 @@ class RESTConnection {
     _addHeaders(request);
     var response = await request.close();
 
-    var responseBody = await response.transform(Utf8Decoder()).join();
-    return responseBody;
+    return response;
   }
 
-  Future<String> runPost(
+
+  Future<HttpClientResponse> runPost(
       String baseURL, Map<String, dynamic> parameters, String body) async {
     HttpClient client = new HttpClient();
     client.badCertificateCallback =
@@ -133,10 +134,7 @@ class RESTConnection {
     request.headers.contentLength = body.length;
     request.write(body);
     var response = await request.close();
-    /*print(response);
-    print(body);
-    print(response.statusCode);*/
-    var responseBody = await response.transform(Utf8Decoder()).join();
-    return responseBody;
+
+    return response;
   }
 }

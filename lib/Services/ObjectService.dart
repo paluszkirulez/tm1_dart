@@ -1,4 +1,5 @@
 import 'package:tm1_dart/Objects/TM1Object.dart';
+import 'package:tm1_dart/Utils/JsonConverter.dart';
 
 import 'RESTConnection.dart';
 import 'dart:convert';
@@ -6,25 +7,38 @@ abstract class ObjectService {
 
   static RESTConnection restConnection = RESTConnection.restConnection;
 
-  Future<List<String>> getObjects (String objectClass, bool getControl) async {
+  Future<bool> create(TM1Object tm1object) async {
+    var request = tm1object.createTM1Path();
+    String body = tm1object.body();
+    if (!await checkIfExists(tm1object)) {
+      await restConnection.runPost(request, {}, body);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<List<String>> getObjects (TM1Object objectClass, {bool getControl}) async {
     ///general process to get list of elements, works for Cubes, Dimensions and Chores
     String baseURL = 'api/v1/$objectClass';
     String excluded = (getControl) ? '{': '}';
     Map<String,dynamic> params = {'\$select':'Name','\$filter':'not startswith(Name,\'$excluded\')'};
     var bodyReturned = await restConnection.runGet(baseURL, parameters: params);
-    var decodedJson = jsonDecode(bodyReturned);
+    var decodedJson =  jsonDecode(await transformJson(bodyReturned));
     List<dynamic> objectsMap= decodedJson['value'];
     var namesList = objectsMap.map((name)=>name.toString().substring(7,name.toString().length-1)).toList();
     return(namesList);
   }
   Future<bool> checkIfExists(TM1Object objectClass) async {
     bool returnedBool = true;
-
     String baseURL = objectClass.createTM1Path()+'/\$count';
     print(objectClass.createTM1Path());
     Map<String,dynamic> params = {'\$filter':'Name eq \'${objectClass.name}\''};
     var bodyReturned = await restConnection.runGet(baseURL, parameters: params);
-    if(bodyReturned == '0'){
+    var checkedValue = await transformJson(bodyReturned);
+
+    if(checkedValue == '0'){
+
       returnedBool = false;
     }
     return returnedBool;
