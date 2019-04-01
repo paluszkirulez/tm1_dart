@@ -71,7 +71,6 @@ class HierarchyService extends ObjectService {
   Future<String> getDefaultMember(Hierarchy hierarchy) async {
     var baseURL = 'api/v1/Dimensions(\'${hierarchy.dimension}\')/Hierarchies(\'${hierarchy.name}\')/DefaultMember/Name/\$value';
     var bodyReturned = await restConnection.runGet(baseURL);
-
     String decodedJson = await transformJson(bodyReturned);
     return decodedJson;
   }
