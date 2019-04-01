@@ -9,6 +9,7 @@ import 'package:tm1_dart/Utils/JsonConverter.dart';
 
 class DimensionService extends ObjectService{
   static RESTConnection restConnection = RESTConnection.restConnection;
+
   Future<Dimension> getDimension(String dimensionName) async{
     var bodyReturned = await restConnection.runGet(
         'api/v1/Dimensions(\'$dimensionName\')');
@@ -35,15 +36,5 @@ class DimensionService extends ObjectService{
         .toList();
     return namesList;
   }
-  Future<Map<String, dynamic>> getObjectsAsaMap(Dimension dimension) async {
-    List<String> namesList = await getObjects(dimension);
-    Map<String, dynamic> nameTypeMap = <String, dynamic>{};
-    List<String> tempList = <String>[];
-    for (int a = 0; a < namesList.length - 1; a++) {
-      tempList = namesList[a].split(', ');
-      nameTypeMap.addAll(
-          {tempList[0]: tempList[1].replaceRange(0, 'Type: '.length, '')});
-    }
-    return nameTypeMap;
-  }
+
 }

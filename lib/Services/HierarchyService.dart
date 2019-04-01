@@ -9,7 +9,7 @@ import 'package:tm1_dart/Utils/JsonConverter.dart';
 
 class HierarchyService extends ObjectService {
   static RESTConnection restConnection = RESTConnection.restConnection;
-
+  //TODO get all subsets within given hierarchy
   Future<Hierarchy> getHierarchy(
       String dimensionName, String hierarchyName) async {
     var bodyReturned = await restConnection.runGet(

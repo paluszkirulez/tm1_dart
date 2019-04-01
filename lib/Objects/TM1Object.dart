@@ -10,4 +10,5 @@ abstract class TM1Object{
   TM1Object();
 
 
+
 }

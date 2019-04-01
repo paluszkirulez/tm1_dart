@@ -17,11 +17,10 @@ class ElementService extends ObjectService {
     var bodyReturned = await restConnection.runGet(
         'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Elements(\'$elementName\')');
     var decodedJson =  jsonDecode(await transformJson(bodyReturned));
-    Map<String, dynamic> tempList = new Map<String, dynamic>.from(decodedJson);
+    //Map<String, dynamic> tempList = new Map<String, dynamic>.from(decodedJson);
     //print(tempList);
     Element element =
         Element.fromJson(dimensionName, hierarchyName, decodedJson);
-    print(element.toString());
     return element;
   }
 
