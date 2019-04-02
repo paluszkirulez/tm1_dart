@@ -24,6 +24,7 @@ class HierarchyService extends ObjectService {
   }
 
   Future<List<String>> getObjects(TM1Object hierarchy, {getControl}) async {
+    //returns all elements as list
     Map<String, dynamic> parametersMap = {};
     parametersMap.addAll({'\$select': 'Name,Type'});
     Hierarchy hierarchyFromObject = hierarchy as Hierarchy;
@@ -39,6 +40,7 @@ class HierarchyService extends ObjectService {
   }
 
   Future<Map<String, dynamic>> getObjectsAsaMap(Hierarchy hierarchy) async {
+    //returns elements as name:type map
     List<String> namesList = await getObjects(hierarchy);
     Map<String, dynamic> nameTypeMap = <String, dynamic>{};
     List<String> tempList = <String>[];

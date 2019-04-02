@@ -30,6 +30,7 @@ dev_dependencies:
     sdk: flutter
   mockito: ^4.0.0
   random_string: ^0.0.2
+  get_ip: ^0.2.0
 
 
 # For information on the generic Dart part of this file, see the
