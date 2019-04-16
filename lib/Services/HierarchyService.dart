@@ -39,18 +39,7 @@ class HierarchyService extends ObjectService {
     return namesList;
   }
 
-  Future<Map<String, dynamic>> getObjectsAsaMap(Hierarchy hierarchy) async {
-    //returns elements as name:type map
-    List<String> namesList = await getObjects(hierarchy);
-    Map<String, dynamic> nameTypeMap = <String, dynamic>{};
-    List<String> tempList = <String>[];
-    for (int a = 0; a < namesList.length - 1; a++) {
-      tempList = namesList[a].split(', ');
-      nameTypeMap.addAll(
-          {tempList[0]: tempList[1].replaceRange(0, 'Type: '.length, '')});
-    }
-    return nameTypeMap;
-  }
+
 
   Future<Map<String, dynamic>> getAttributes(Hierarchy hierarchy) async {
     var bodyReturned = await restConnection.runGet(

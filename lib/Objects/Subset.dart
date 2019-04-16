@@ -1,5 +1,6 @@
 import 'TM1Object.dart';
 import 'Element.dart';
+import 'dart:convert';
 class Subset extends TM1Object{
   final String classType = 'Subset';
   final String name;
@@ -30,8 +31,32 @@ class Subset extends TM1Object{
 
   @override
   String body() {
-    // TODO: implement body
-    return null;
+    Map<String,dynamic> bodyMap={};
+    bodyMap.addAll({'Name':name});
+    aliasApplied!=''? bodyMap.addAll({'Alias':aliasApplied}):{};
+    bodyMap.addAll({'Hierarchy@odata.bind':'Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')'});
+    bodyMap.addAll(createExpressionOrListOfElement());
+    return json.encode(bodyMap);
+  }
+
+  Map<String,dynamic> createExpressionOrListOfElement(){
+    Map<String,dynamic> bodyMap={};
+    if(isDynamic){
+      bodyMap.addAll({'Expression':MDX});
+
+    }
+    else{
+      var statement='Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Elements';
+      var listOfElements='[';
+      for(Element element in elements){
+        listOfElements = listOfElements+statement+'(\'${element.name}\')';
+        listOfElements = listOfElements+',';
+      }
+      listOfElements = listOfElements.substring(0,listOfElements.length-1)+']';
+      bodyMap.addAll({'Elements@odata.bind':listOfElements});
+    }
+
+    return bodyMap;
   }
 
 

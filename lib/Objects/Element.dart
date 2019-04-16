@@ -1,5 +1,6 @@
 import 'TM1Object.dart';
 import '../Utils/ElementType.dart';
+import 'dart:convert';
 
 class Element extends TM1Object {
   ///class that represents element
@@ -35,10 +36,10 @@ class Element extends TM1Object {
   @override
   String body() {
     Map<String, dynamic> bodyMap = {
-      '"Name"': '"$name"',
-      '"Type"': '"$elementType"'
+      'Name': name,
+      'Type': elementType
     };
-    return bodyMap.toString();
+    return json.encode(bodyMap);
   }
 
   @override

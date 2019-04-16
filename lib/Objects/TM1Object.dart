@@ -5,7 +5,9 @@ abstract class TM1Object{
 
   String body();
 
-  String createTM1Path();
+  String createTM1Path(){
+    return 'api/v1/$classType';
+  }
   /// abstraction of all classes that tm1 consist off
   TM1Object();
 

@@ -3,8 +3,8 @@ import 'package:tm1_dart/Utils/JsonConverter.dart';
 
 import 'RESTConnection.dart';
 import 'dart:convert';
-abstract class ObjectService {
 
+abstract class ObjectService {
   static RESTConnection restConnection = RESTConnection.restConnection;
 
   Future<bool> create(TM1Object tm1object) async {
@@ -18,29 +18,50 @@ abstract class ObjectService {
     }
   }
 
-  Future<List<String>> getObjects (TM1Object objectClass, {bool getControl}) async {
+  Future<List<String>> getObjects(TM1Object objectClass,
+      {bool getControl=false}) async {
     ///general process to get list of elements, works for Cubes, Dimensions and Chores
-    String baseURL = 'api/v1/$objectClass';
-    String excluded = (getControl) ? '{': '}';
-    Map<String,dynamic> params = {'\$select':'Name','\$filter':'not startswith(Name,\'$excluded\')'};
+    String baseURL = objectClass.createTM1Path();
+    String excluded = (getControl) ? '{' : '}';
+    Map<String, dynamic> params = {
+      '\$select': 'Name,Type',
+      '\$filter': 'not startswith(Name,\'$excluded\')'
+    };
     var bodyReturned = await restConnection.runGet(baseURL, parameters: params);
-    var decodedJson =  jsonDecode(await transformJson(bodyReturned));
-    List<dynamic> objectsMap= decodedJson['value'];
-    var namesList = objectsMap.map((name)=>name.toString().substring(7,name.toString().length-1)).toList();
-    return(namesList);
+    var decodedJson = jsonDecode(await transformJson(bodyReturned));
+    List<dynamic> objectsMap = decodedJson['value'];
+    var namesList = objectsMap
+        .map((name) => name.toString().substring(7, name.toString().length - 1))
+        .toList();
+    return (namesList);
   }
+
   Future<bool> checkIfExists(TM1Object objectClass) async {
     bool returnedBool = true;
-    String baseURL = objectClass.createTM1Path()+'/\$count';
+    String baseURL = objectClass.createTM1Path() + '/\$count';
     print(objectClass.createTM1Path());
-    Map<String,dynamic> params = {'\$filter':'Name eq \'${objectClass.name}\''};
+    Map<String, dynamic> params = {
+      '\$filter': 'Name eq \'${objectClass.name}\''
+    };
     var bodyReturned = await restConnection.runGet(baseURL, parameters: params);
     var checkedValue = await transformJson(bodyReturned);
 
-    if(checkedValue == '0'){
-
+    if (checkedValue == '0') {
       returnedBool = false;
     }
     return returnedBool;
+  }
+
+  Future<Map<String, dynamic>> getObjectsAsaMap(TM1Object tm1object) async {
+    //returns elements as name:type map
+    List<String> namesList = await getObjects(tm1object);
+    Map<String, dynamic> nameTypeMap = <String, dynamic>{};
+    List<String> tempList = <String>[];
+    for (int a = 0; a < namesList.length; a++) {
+      tempList = namesList[a].split(', ');
+      nameTypeMap.addAll(
+          {tempList[0]: tempList[1].replaceRange(0, 'Type: '.length, '')});
+    }
+    return nameTypeMap;
   }
 }

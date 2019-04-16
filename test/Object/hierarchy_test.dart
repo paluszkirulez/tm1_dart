@@ -14,7 +14,7 @@ class MockHierarchyService extends Mock implements HierarchyService {}
 var hirarchyService = MockHierarchy();
 
 void main() {
-  String ip = "10.113.152.189";
+  String ip = "10.113.179.59";
   RESTConnection restConnection = RESTConnection.initialize(
       "https", ip, 8010, "admin", "apple", true, "", false, false);
   Map<String, dynamic> testMap = {'Name': 'actvsbud'};
@@ -24,7 +24,7 @@ void main() {
     Map<String,dynamic> expectedElements = {
     'Actual':'Numeric',
     'Budget':'Numeric',
-    'Variance':'Consolidated'
+    'Variance': 'Consolidated'
     };
     var printout = await HierarchyService().getObjectsAsaMap(hierarchy);
     expect(printout, expectedElements);
