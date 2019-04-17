@@ -3,9 +3,7 @@
 import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Subset.dart';
 import 'package:tm1_dart/Objects/UnregSubset.dart';
-import 'package:tm1_dart/Services/RESTConnection.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tm1_dart/Services/SubsetService.dart';
 import 'package:tm1_dart/Objects/Axis/ViewAxisSelection.dart';
 import 'package:tm1_dart/Objects/Axis/ViewTitleSelection.dart';
 
