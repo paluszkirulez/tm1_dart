@@ -3,8 +3,10 @@ import 'package:tm1_dart/Services/DimensionService.dart';
 import 'package:tm1_dart/Services/RESTConnection.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-void main() {
-  String ip = "10.113.179.59";
+import '../UtilsForTest/ConnectionUtils.dart';
+
+void main() async {
+  String ip = await  getIp();
   RESTConnection restConnection = RESTConnection.initialize(
       "https",
       ip,

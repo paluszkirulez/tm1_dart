@@ -1,31 +1,28 @@
 import 'dart:convert';
 
-import 'package:tm1_dart/Objects/Dimension.dart';
+import 'package:tm1_dart/Objects/Cube.dart';
 import 'package:tm1_dart/Objects/TM1Object.dart';
 import 'package:tm1_dart/Services/ObjectService.dart';
-import 'package:tm1_dart/Services/RESTConnection.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
 
-
-class DimensionService extends ObjectService{
-
-
-  Future<Dimension> getDimension(String dimensionName) async{
+class CubeService extends ObjectService{
+  Future<Cube> getCube(String cubeName) async{
     var bodyReturned = await restConnection.runGet(
-        'api/v1/Dimensions(\'$dimensionName\')');
+        'api/v1/Cubes(\'$cubeName\')');
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
-    Dimension dimension = Dimension.fromJson(decodedJson);
-    dimension.hierarchies = await getHierarchies(dimension);
-    return dimension;
+    Cube cube = Cube.fromJson(decodedJson);
+    cube.dimensions = await getDimensions(cube);
+    return cube;
   }
 
-  Future<List<String>> getHierarchies(TM1Object dimension, {getControl}) async {
-    //return list of hierarchies
+
+  Future<List<String>> getDimensions(TM1Object cube, {getControl}) async {
+    //return list of dimensions
     Map<String, dynamic> parametersMap = {};
     parametersMap.addAll({'\$select': 'Name'});
-    Dimension dimensionFromObject = dimension as Dimension;
+    Cube cubeFromObject = cube as Cube;
     var bodyReturned = await restConnection.runGet(
-        'api/v1/Dimensions(\'${dimensionFromObject.name}\')/Hierarchies',
+        cubeFromObject.createTM1Path()+'(\'${cube.name}\')/Dimensions',
         parameters: parametersMap);
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
     List<dynamic> objectsMap = decodedJson['value'];
@@ -34,5 +31,4 @@ class DimensionService extends ObjectService{
         .toList();
     return namesList;
   }
-
 }

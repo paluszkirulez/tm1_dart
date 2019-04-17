@@ -4,10 +4,12 @@ import 'package:tm1_dart/Services/RESTConnection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tm1_dart/Services/SubsetService.dart';
 
+import '../UtilsForTest/ConnectionUtils.dart';
+
 
 void main() async {
   //String ipAddress = await GetIp.ipAddress;
-  String ipAddress = '10.113.171.159';
+  String ipAddress = await getIp();
   RESTConnection restConnection = RESTConnection.initialize(
       "https", ipAddress, 8010, "admin", "apple", true, "", false, false);
   String dimName = 'actvsbud';

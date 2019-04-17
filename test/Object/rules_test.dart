@@ -14,10 +14,10 @@ void main(){
 
   test('test if getting rid of \\n elements work correctly',() {
     String formattedBody = "FEEDSTRINGS;SKIPCHECK;";
-    //expect(formattedBody, rule.formattedBody);
-    //expect(false, rule.hasFeeders);
+    expect(formattedBody, rule.formattedBody);
+    expect(false, rule.hasFeeders);
     expect(true, rule.hasSkipcheck);
-    //expect(false, rule.hasUndefVals);
+    expect(false, rule.hasUndefVals);
 
   });
 

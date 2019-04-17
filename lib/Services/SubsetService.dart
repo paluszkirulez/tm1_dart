@@ -8,7 +8,7 @@ import 'package:tm1_dart/Utils/JsonConverter.dart';
 
 class SubsetService extends ObjectService {
   /// class servicing operation related to subsets
-  static RESTConnection restConnection = RESTConnection.restConnection;
+
   //TODO get all elements within given subset
   Future<Subset> getSubset(
       String dimensionName, String hierarchyName, String subsetName) async {
@@ -21,7 +21,7 @@ class SubsetService extends ObjectService {
     Subset subset = Subset.fromJson(dimensionName, hierarchyName, decodedJson);
     return subset;
   }
-  Future<List<String>> getObjects(TM1Object subset, {getControl}) async {
+  Future<List<String>> getElements(TM1Object subset, {getControl}) async {
     Map<String, dynamic> parametersMap = {};
     parametersMap.addAll({'\$select': 'Name,Type'});
     Subset subsetFromObject = subset as Subset;

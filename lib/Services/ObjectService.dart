@@ -5,7 +5,7 @@ import 'RESTConnection.dart';
 import 'dart:convert';
 
 abstract class ObjectService {
-  static RESTConnection restConnection = RESTConnection.restConnection;
+  RESTConnection restConnection = RESTConnection.restConnection;
 
   Future<bool> create(TM1Object tm1object) async {
     var request = tm1object.createTM1Path();
@@ -39,7 +39,6 @@ abstract class ObjectService {
   Future<bool> checkIfExists(TM1Object objectClass) async {
     bool returnedBool = true;
     String baseURL = objectClass.createTM1Path() + '/\$count';
-    print(objectClass.createTM1Path());
     Map<String, dynamic> params = {
       '\$filter': 'Name eq \'${objectClass.name}\''
     };

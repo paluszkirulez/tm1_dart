@@ -95,7 +95,7 @@ class RESTConnection {
 
   Future<HttpClientResponse> runGet(String baseURL,
       {Map<String, dynamic> parameters}) async {
-    //TODO function should resooult with just response and additional function should decode it
+
 
     HttpClient client = new HttpClient();
     client.badCertificateCallback =
@@ -103,11 +103,10 @@ class RESTConnection {
       return true;
     };
     Uri tempUrl = url.replace(path: baseURL);
-    print(tempUrl);
+
     if (parameters != null) {
       tempUrl = _replaceUnwantedStrings(tempUrl, parameters, baseURL);
     }
-    print(tempUrl);
 
     var request = await client.getUrl(tempUrl);
     _addHeaders(request);
@@ -115,7 +114,6 @@ class RESTConnection {
 
     return response;
   }
-
 
   Future<HttpClientResponse> runPost(
       String baseURL, Map<String, dynamic> parameters, String body) async {
@@ -128,7 +126,7 @@ class RESTConnection {
     if (parameters != null && parameters.isNotEmpty) {
       tempUrl = _replaceUnwantedStrings(tempUrl, parameters, baseURL);
     }
-    print(tempUrl);
+
     var request = await client.postUrl(tempUrl);
     _addHeaders(request);
     request.headers.contentLength = body.length;

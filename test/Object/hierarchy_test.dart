@@ -5,6 +5,8 @@ import 'package:tm1_dart/Services/HierarchyService.dart';
 import 'package:tm1_dart/Services/RESTConnection.dart';
 import 'package:random_string/random_string.dart' as random;
 
+import '../UtilsForTest/ConnectionUtils.dart';
+
 class MockHierarchy extends Mock implements Hierarchy {}
 
 //var hierarchy = MockHierarchy();
@@ -13,8 +15,8 @@ class MockHierarchyService extends Mock implements HierarchyService {}
 
 var hirarchyService = MockHierarchy();
 
-void main() {
-  String ip = "10.113.179.59";
+void main() async {
+  String ip = await getIp();
   RESTConnection restConnection = RESTConnection.initialize(
       "https", ip, 8010, "admin", "apple", true, "", false, false);
   Map<String, dynamic> testMap = {'Name': 'actvsbud'};

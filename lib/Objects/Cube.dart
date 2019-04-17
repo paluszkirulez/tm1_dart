@@ -2,21 +2,23 @@ import 'package:tm1_dart/Objects/Dimension.dart';
 import 'package:tm1_dart/Objects/Rule.dart';
 import 'package:tm1_dart/Objects/TM1Object.dart';
 
-List<String> getCubes(){
+class Cube extends TM1Object {
+  final String name;
+  List<String> dimensions;
+  Rule rules;
+  final String classType = 'Cubes';
 
-}
+  Cube(this.name, {this.dimensions, this.rules});
 
-class Cube extends TM1Object{
-  final String _name;
-  final List<Dimension> _dimensions;
-  final Rule rules;
+  factory Cube.fromJson(Map<String, dynamic> parsedJson) {
+    return new Cube(parsedJson['Name'],
+        rules: Rule.fromJson(parsedJson['Name'], parsedJson));
+  }
 
-  Cube(this._name, this._dimensions, this.rules);
 
   @override
   String createTM1Path() {
-    // TODO: implement createTM1Path
-    return null;
+    return 'api/v1/Cubes';
   }
 
   @override
@@ -24,6 +26,4 @@ class Cube extends TM1Object{
     // TODO: implement body
     return null;
   }
-
-
 }

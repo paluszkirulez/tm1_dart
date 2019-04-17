@@ -4,9 +4,11 @@ import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Services/ElementService.dart';
 import 'package:tm1_dart/Services/RESTConnection.dart';
 
+import '../UtilsForTest/ConnectionUtils.dart';
 
-void main(){
-  String ip = "10.113.152.189";
+
+void main() async{
+  String ip = await getIp();
   RESTConnection restConnection = RESTConnection.initialize("https", ip, 8010,  "admin", "apple", true, "", false, false);
   test('Check if element is created from map',(){
     Map<String,dynamic> testMap = {'Name':'aa','UniqueName':'uName','Type':'Numeric','Index':0,'Level':0};

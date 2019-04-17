@@ -10,7 +10,7 @@ import 'package:tm1_dart/Utils/JsonConverter.dart';
 class ElementService extends ObjectService {
   /// this class is managing elements in hierarchies and dimensions
   ///
-  static RESTConnection restConnection = RESTConnection.restConnection;
+
 
   Future<Element> getElement(
       String dimensionName, String hierarchyName, String elementName) async {

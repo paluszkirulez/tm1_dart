@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'TM1Object.dart';
 import 'Dimension.dart';
 import 'Element.dart';
@@ -28,8 +30,8 @@ class Hierarchy extends TM1Object {
   @override
   String body() {
     Map<String, dynamic> bodyMap = {
-      '"Name"': '"$name"',
+      'Name': name,
     };
-    return bodyMap.toString();
+    return json.encode(bodyMap);
   }
 }

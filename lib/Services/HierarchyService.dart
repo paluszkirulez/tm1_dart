@@ -8,22 +8,22 @@ import 'package:tm1_dart/Services/RESTConnection.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
 
 class HierarchyService extends ObjectService {
-  static RESTConnection restConnection = RESTConnection.restConnection;
+
   //TODO get all subsets within given hierarchy
   Future<Hierarchy> getHierarchy(
       String dimensionName, String hierarchyName) async {
     var bodyReturned = await restConnection.runGet(
         'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')');
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
-    Map<String, dynamic> tempList = new Map<String, dynamic>.from(decodedJson);
-    print(tempList);
+
+
     Hierarchy hierarchy = Hierarchy.fromJson(dimensionName, decodedJson);
-    print(hierarchy.toString());
-    hierarchy.elements = await getObjects(hierarchy);
+
+    hierarchy.elements = await getElements(hierarchy);
     return hierarchy;
   }
 
-  Future<List<String>> getObjects(TM1Object hierarchy, {getControl}) async {
+  Future<List<String>> getElements(TM1Object hierarchy, {getControl}) async {
     //returns all elements as list
     Map<String, dynamic> parametersMap = {};
     parametersMap.addAll({'\$select': 'Name,Type'});
