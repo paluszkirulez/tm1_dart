@@ -22,7 +22,7 @@ void main() {
     "Alias": ""
   };
   Map<String,dynamic> testMapElement = {'Name':'aa','UniqueName':'uName','Type':'Numeric','Index':0,'Level':0};
-  Element element = Element.fromJson('account','account',testMap);
+  Element element = Element.fromJson('account','account',testMapElement);
   Map<String, dynamic> testAxisOfElements = {
     "Name": "All Members",
     "UniqueName": "[$dimName].[All Members]",
