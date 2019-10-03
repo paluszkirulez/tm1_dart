@@ -41,13 +41,17 @@ void main() async {
   Element element1 = Element.fromJson('month', 'month', testMapElement1);
   Element element2 = Element.fromJson('month', 'month', testMapElement2);
   Element element3 = Element.fromJson('month', 'month', testMapElement3);
-
-  UnregSubset subsetMonth1 = UnregSubset('month', 'month',
-      elements: [element1, element2, element3], MDX: '');
+  var monthJson = {'Expression': ''};
+  UnregSubset subsetMonth1 = UnregSubset.fromJson('month', 'month',
+      monthJson);
+  subsetMonth1.elements = [element1, element2, element3];
+  var accountJson = {'Expression': '[account2].[bdg]'};
   UnregSubset subsetAccount2 =
-      UnregSubset('account2', 'account2', MDX: '{[account2].AllMembers}');
-  Subset subsetTitle1 = Subset('actvsbud', 'actvsbud');
-  Subset subsetTitle2 = Subset('region', 'region');
+  UnregSubset.fromJson('account2', 'account2', accountJson);
+  Subset subsetTitle1 = Subset.fromJson('actvsbud', 'actvsbud',
+      {'Expression': '[actvsbud].Actual', 'Name': 'All Members', 'Alias': ''});
+  Subset subsetTitle2 = Subset.fromJson('region', 'region',
+      {'Expression': '[region].World', 'Name': 'Europe', 'Alias': ''});
   ViewTitleSelection viewTitleSelection1 =
       ViewTitleSelection(subsetTitle1, 'actvsbud', 'actvsbud', 'Actual');
   ViewTitleSelection viewTitleSelection2 =
@@ -60,7 +64,21 @@ void main() async {
 
   test('check if mdx is created correctly', () {
     NativeView nativeViewTest = NativeView('temp view', 'PNLCube', true, true, "0.#########", [viewAxisSelection1], [viewTitleSelection1,viewTitleSelection2], [viewAxisSelection2]);
-    var expectedMDX = "SELECT NON EMPTY {[month].[Jan], [month].[Feb], [month].[Mar]} ON COLUMNS, NON EMPTY {[account2].AllMembers} ON ROWS FROM [PNLCube] WHERE ([actvsbud].[Actual], [region].[World])";
+    var expectedMDX = "SELECT NON EMPTY {[month].[Jan], [month].[Feb], [month].[Mar]} ON COLUMNS, NON EMPTY {[account2].[bdg]} ON ROWS FROM [PNLCube] WHERE ([actvsbud].[Actual], [region].[World])";
     expect(nativeViewTest.prepareMDXQueryView(), expectedMDX);
+  });
+  test('check if native view default body json construct is correct', () {
+    NativeView nativeViewTest = NativeView(
+        'temp view',
+        'PNLCube',
+        true,
+        true,
+        "0.#########",
+        [viewAxisSelection1],
+        [viewTitleSelection1, viewTitleSelection2],
+        [viewAxisSelection2]);
+    var expectedMDX = "{\"@odata.type\": \"ibm.tm1.api.v1.NativeView\",\"Name\": \"temp view\",\"Columns\": [{\"Subset\":{\"Hierarchy@odata.bind\":\"Dimensions(\'month\')/Hierarchies(\'month\')\",\"Elements@odata.bind\":[\"Dimensions(\'month\')/Hierarchies(\'month\')/Elements(\'Jan\')\",\"Dimensions(\'month\')/Hierarchies(\'month\')/Elements(\'Feb\')\",\"Dimensions(\'month\')/Hierarchies(\'month\')/Elements(\'Mar\')\"]}}], \"Rows\": [{\"Subset\":{\"Hierarchy@odata.bind\":\"Dimensions(\'account2\')/Hierarchies(\'account2\')\",\"Expression\":\"[account2].[bdg]\"}}], \"Titles\": [{\"Subset@odata.bind\":\"Dimensions(\'actvsbud\')/Hierarchies(\'actvsbud\')/Subsets(\'All Members\')\",\"Selected@odata.bind\":\"Dimensions(\'actvsbud\')/Hierarchies(\'actvsbud\')/Elements(\'Actual\')\"},{\"Subset@odata.bind\":\"Dimensions(\'region\')/Hierarchies(\'region\')/Subsets(\'Europe\')\",\"Selected@odata.bind\":\"Dimensions(\'region\')/Hierarchies(\'region\')/Elements(\'World\')\"}], \"SuppressEmptyColumns\": true,\"SuppressEmptyRows\":true,\"FormatString\":\"0.#########\"}"
+        .trim();
+    expect(nativeViewTest.body().trim(), expectedMDX);
   });
 }

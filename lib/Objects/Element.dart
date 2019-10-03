@@ -29,7 +29,6 @@ class Element extends TM1Object {
         name: parsedJson['Name'],
         uniqueName: parsedJson['UniqueName'],
         elementType: parsedJson['Type'],
-        index: parsedJson['Index'],
         level: parsedJson['Level']);
   }
 

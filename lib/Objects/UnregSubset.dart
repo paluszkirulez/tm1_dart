@@ -15,7 +15,9 @@ class UnregSubset extends Subset{
 
   factory UnregSubset.fromJson(String dimensionName, String hierarchyName,Map<String,dynamic> parsedJson){
     return new UnregSubset(dimensionName, hierarchyName,MDX: parsedJson['Expression'],
-        isDynamic: parsedJson['Expression']!='[$dimensionName].MEMBERS' ? true :false );
+        isDynamic: parsedJson['Expression'] != '[$dimensionName].MEMBERS'
+            ? parsedJson['Expression'] != '' ? true : false
+            : false);
   }
 
   @override

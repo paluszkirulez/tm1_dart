@@ -39,6 +39,19 @@ class HierarchyService extends ObjectService {
     return namesList;
   }
 
+  Future<Map<String, dynamic>> getElementsAsaMap(TM1Object tm1object) async {
+    //returns elements as name:type map
+    List<String> namesList = await getElements(tm1object);
+    Map<String, dynamic> nameTypeMap = <String, dynamic>{};
+    List<String> tempList = <String>[];
+    for (int a = 0; a < namesList.length; a++) {
+      tempList = namesList[a].split(', ');
+      nameTypeMap.addAll(
+          {tempList[0]: tempList[1].replaceRange(0, 'Type: '.length, '')});
+    }
+    return nameTypeMap;
+  }
+
 
 
   Future<Map<String, dynamic>> getAttributes(Hierarchy hierarchy) async {
@@ -64,5 +77,26 @@ class HierarchyService extends ObjectService {
     var bodyReturned = await restConnection.runGet(baseURL);
     String decodedJson = await transformJson(bodyReturned);
     return decodedJson;
+  }
+
+  Future<List<String>> getSubsets(TM1Object hierarchy, {getControl}) async {
+    //returns all elements as list
+    Map<String, dynamic> parametersMap = {};
+    parametersMap.addAll({'\$select': 'Name,Type'});
+    Hierarchy hierarchyFromObject = hierarchy as Hierarchy;
+    var bodyReturned = await restConnection.runGet(
+        'api/v1/Dimensions(\'${hierarchyFromObject
+            .dimension}\')/Hierarchies(\'${hierarchyFromObject
+            .name}\')/Subsets',
+        parameters: parametersMap);
+    var decodedJson = jsonDecode(await transformJson(bodyReturned));
+    List<dynamic> objectsMap = decodedJson['value'];
+    var namesList = objectsMap
+        .map((name) =>
+        name.toString().substring(7, name
+            .toString()
+            .length - 1))
+        .toList();
+    return namesList;
   }
 }

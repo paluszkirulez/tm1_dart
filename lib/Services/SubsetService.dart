@@ -9,7 +9,7 @@ import 'package:tm1_dart/Utils/JsonConverter.dart';
 class SubsetService extends ObjectService {
   /// class servicing operation related to subsets
 
-  //TODO get all elements within given subset
+  //TODO push methods
   Future<Subset> getSubset(
       String dimensionName, String hierarchyName, String subsetName) async {
     Map<String, dynamic> parametersMap = {};
@@ -18,6 +18,7 @@ class SubsetService extends ObjectService {
         'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Subsets(\'$subsetName\')',
         parameters: parametersMap);
     var decodedJson =  jsonDecode(await transformJson(bodyReturned));
+    //print(dimensionName+' '+decodedJson.toString()+' '+parametersMap.toString());
     Subset subset = Subset.fromJson(dimensionName, hierarchyName, decodedJson);
     return subset;
   }
@@ -35,6 +36,19 @@ class SubsetService extends ObjectService {
         .toList();
     return namesList;
 
+  }
+
+  Future<Map<String, dynamic>> getElementsAsaMap(TM1Object tm1object) async {
+    //returns elements as name:type map
+    List<String> namesList = await getElements(tm1object);
+    Map<String, dynamic> nameTypeMap = <String, dynamic>{};
+    List<String> tempList = <String>[];
+    for (int a = 0; a < namesList.length; a++) {
+      tempList = namesList[a].split(', ');
+      nameTypeMap.addAll(
+          {tempList[0]: tempList[1].replaceRange(0, 'Type: '.length, '')});
+    }
+    return nameTypeMap;
   }
 
 }

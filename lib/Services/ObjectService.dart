@@ -20,7 +20,7 @@ abstract class ObjectService {
 
   Future<List<String>> getObjects(TM1Object objectClass,
       {bool getControl=false}) async {
-    ///general process to get list of elements, works for Cubes, Dimensions and Chores
+    ///general process to get list of entities, works for Cubes, Dimensions and Chores
     String baseURL = objectClass.createTM1Path();
     String excluded = (getControl) ? '{' : '}';
     Map<String, dynamic> params = {

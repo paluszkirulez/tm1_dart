@@ -58,10 +58,10 @@ void main() {
     expect(testSelection.body(), actualString);
   });
   //TODO check how elements based subset should be created and what is the output
-/*  test('check if axis with elements is correctly created', () async {
+  test('check if axis with elements is correctly created', () async {
     ViewAxisSelection testSelection =
     ViewAxisSelection(testingSubsetWithElements,dimName,hierName);
     var actualString ='{"Subset":{"Hierarchy@odata.bind":"Dimensions(\'$dimName\')/Hierarchies(\'$hierName\')","Expression":"${testingSubsetWithElements.elements}"}}';
     expect(testSelection.body(), actualString);
-  });*/
+  });
 }

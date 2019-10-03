@@ -28,7 +28,7 @@ void main() async {
     'Budget':'Numeric',
     'Variance': 'Consolidated'
     };
-    var printout = await HierarchyService().getObjectsAsaMap(hierarchy);
+    var printout = await HierarchyService().getElementsAsaMap(hierarchy);
     expect(printout, expectedElements);
   });
   test('check if hierarchy funtion returns a list of attributes', () async {
@@ -60,6 +60,9 @@ void main() async {
   test('check if get defautl member works', () async {
     String actualResult = await HierarchyService().getDefaultMember(hierarchy);
     expect(actualResult,'Actual');
+  });
+  test('get all subsets f a given dimension', () async {
+
   });
 }
 //hierarchy tests

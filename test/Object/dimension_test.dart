@@ -28,8 +28,9 @@ void main() async {
   });
   test('check if correct hierarchies are returned', () async {
     List<String> expectedElements = ['actvsbud','actvsbud2','Leaves','O#3)3', '=Z%G1'];
-    var printout = await DimensionService().getObjects(dimension);
+    expectedElements.sort((a, b) => a.hashCode.compareTo(b.hashCode));
+    var printout = await DimensionService().getHierarchies(dimension);
+    printout.sort((a, b) => a.hashCode.compareTo(b.hashCode));
     expect(printout, expectedElements);
   });
-
 }

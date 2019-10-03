@@ -6,62 +6,78 @@ import 'package:tm1_dart/Services/SubsetService.dart';
 
 import '../UtilsForTest/ConnectionUtils.dart';
 
-
 void main() async {
   //String ipAddress = await GetIp.ipAddress;
   String ipAddress = await getIp();
   RESTConnection restConnection = RESTConnection.initialize(
       "https", ipAddress, 8010, "admin", "apple", true, "", false, false);
-  String dimName = 'actvsbud';
-  String hierName = 'actvsbud';
-  Map<String, dynamic> testMap = {
-    "Name": "All Members",
-    "UniqueName": "[$dimName].[All Members]",
-    "Expression": "[$dimName].MEMBERS",
+  String dimStatic = 'Month';
+  String hierStatic = 'Month';
+  String dimDynamic = 'Region';
+  String hierDynamic = 'Region';
+  Map<String, dynamic> staticMap = {
+    "Name": "Q1",
+    "UniqueName": "[$dimStatic].[Q1]",
+    "Expression": "[$dimStatic].MEMBERS",
     "Alias": ""
   };
+  Map<String, dynamic> element1map = {
+    "Name": "Jan",
+    "UniqueName": "[$dimStatic].[Jan]",
+    "Type": "N",
+    "Level": 0
+  };
+  Map<String, dynamic> element2map = {
+    "Name": "Feb",
+    "UniqueName": "[$dimStatic].[Feb]",
+    "Type": "N",
+    "Level": 0
+  };
+  Map<String, dynamic> element3map = {
+    "Name": "Mar",
+    "UniqueName": "[$dimStatic].[Mar]",
+    "Type": "N",
+    "Level": 0
+  };
 
+  Element element1 = Element.fromJson(dimStatic, hierStatic, element1map);
+  Element element2 = Element.fromJson(dimStatic, hierStatic, element2map);
+  Element element3 = Element.fromJson(dimStatic, hierStatic, element3map);
+  List<Element> elementsOfStaticList = [element1, element2, element3];
 
-  String subsName = 'All Members';
-  Subset testingSubset = Subset.fromJson(dimName, hierName, testMap);
-  test('check if subset is correctly created', () async {
-    var printout = await SubsetService().getSubset(dimName, hierName, subsName);
-    expect(printout.name, testingSubset.name);
-    expect(printout.isDynamic, false);
-    expect(printout.MDX, testingSubset.MDX);
+  Map<String, dynamic> dynamicMap = {
+    'Name': 'dynamic',
+    'UniqueName': '[$dimDynamic].[dynamic]',
+    'Expression': '{TM1SORT( {TM1SUBSETALL( [$dimDynamic] )}, ASC)}',
+    'Alias': ''
+  };
+
+  Subset staticSubset = Subset.fromJson(dimStatic, hierStatic, staticMap);
+  staticSubset.elements = elementsOfStaticList;
+  Subset dynamicSubset = Subset.fromJson(dimDynamic, hierDynamic, dynamicMap);
+
+  test('check if subset is dynamic and static', () async {
+    expect(dynamicSubset.isDynamic, true);
+    expect(staticSubset.isDynamic, false);
   });
-  test('check if subset returns correct elements', () async {
-    var printout = await SubsetService().getObjects(testingSubset);
-    List<String> expectedList = [
-      'Variance, Type: Consolidated',
-      'Actual, Type: Numeric',
-      'Budget, Type: Numeric'
-    ];
-    expect(printout, expectedList);
+
+  test('does the subset exist', () async {
+    bool actualValue = await SubsetService().checkIfExists(staticSubset);
+    expect(actualValue, true);
   });
-  test('check if subset returns correct elements as a map', () async {
-    var printout = await SubsetService().getObjectsAsaMap(testingSubset);
-    Map<String,dynamic> expectedList = {
-    'Variance': 'Consolidated',
-    'Actual':'Numeric',
-    'Budget':'Numeric'
-    };
-    expect(printout, expectedList);
+
+  test('get subset from resource', () async {
+    Subset actualSubset = await SubsetService()
+        .getSubset(dimStatic, hierStatic, staticSubset.name);
+    expect(actualSubset.name, staticSubset.name);
+    //expect(actualSubset.elements.length, 0);
   });
-  test('check if subset exists', () async {
-    var printout = await SubsetService().checkIfExists(testingSubset);
-    bool expectedResponse = true;
-    expect(printout, expectedResponse);
+  test('get elements of a given subset', () async {
+    List<String> actualList = await SubsetService().getElements(staticSubset);
+    actualList = actualList.map((a) => a.substring(0, 3)).toList();
+    expect(actualList, [element1.name, element2.name, element3.name]);
   });
-  test('check if correct body for subset is created', () async {
-    Map<String,dynamic> testMap = {'Name':'aa','UniqueName':'uName','Type':'Numeric','Index':0,'Level':0};
-    Map<String,dynamic> testMap2 = {'Name':'aa2','UniqueName':'uName','Type':'Numeric','Index':0,'Level':0};
-    Element element = Element.fromJson('actvsbud','actvsbud',testMap);
-    Element element2 = Element.fromJson('actvsbud','actvsbud',testMap2);
-    testingSubset.elements=[element, element2];
-    var printout = testingSubset.body();
-    print(printout);
-    var expectedResponse = '{"Name": "All Members", "Hierarchy@odata.bind": "Dimensions(\'actvsbud\')/Hierarchies(\'actvsbud\')", "Elements@odata.bind": ["Dimensions(\'actvsbud\')/Hierarchies(\'actvsbud\')/Elements(\'aa\')","Dimensions(\'actvsbud\')/Hierarchies(\'actvsbud\')/Elements(\'aa2\')"]}';
-    expect(printout, expectedResponse);
-  });
+
+  //TODO get subsets should work from dimension service
+
 }
