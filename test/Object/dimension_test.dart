@@ -56,4 +56,9 @@ void main() async {
     expect(result, true);
     expect(result2, false);
   });
+  test('get default hierarchy for dimension', () async {
+    String defaultHier = await DimensionService().getDefaultHierarchy(
+        dimension);
+    expect(defaultHier, dimension.name);
+  });
 }

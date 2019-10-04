@@ -1,8 +1,9 @@
+import 'dart:convert';
+
 import 'package:tm1_dart/Objects/TM1Object.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
 
 import 'RESTConnection.dart';
-import 'dart:convert';
 
 abstract class ObjectService {
   RESTConnection restConnection = RESTConnection.restConnection;
@@ -20,6 +21,7 @@ abstract class ObjectService {
 
   Future<bool> delete(TM1Object tm1object) async {
     var request = tm1object.createTM1Path() + '(\'${tm1object.name}\')';
+    print(request);
     if (await checkIfExists(tm1object)) {
       await restConnection.runDelete(request);
       return true;

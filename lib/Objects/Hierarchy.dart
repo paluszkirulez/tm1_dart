@@ -1,9 +1,6 @@
 import 'dart:convert';
 
 import 'TM1Object.dart';
-import 'Dimension.dart';
-import 'Element.dart';
-import 'Subset.dart';
 
 class Hierarchy extends TM1Object {
   ///abstraction of hierarchy, consist of elements and keeps reference
@@ -38,4 +35,6 @@ class Hierarchy extends TM1Object {
     };
     return json.encode(bodyMap);
   }
+
+
 }

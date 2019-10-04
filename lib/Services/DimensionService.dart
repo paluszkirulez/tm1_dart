@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:tm1_dart/Objects/Dimension.dart';
 import 'package:tm1_dart/Objects/TM1Object.dart';
 import 'package:tm1_dart/Services/ObjectService.dart';
-import 'package:tm1_dart/Services/RESTConnection.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
 
 
@@ -33,6 +32,17 @@ class DimensionService extends ObjectService{
         .map((name) => name.toString().substring(7, name.toString().length - 1))
         .toList();
     return namesList;
+  }
+
+  Future<String> getDefaultHierarchy(TM1Object dimension) async {
+    Map<String, dynamic> parametersMap = {};
+    parametersMap.addAll({'\$select': 'Name'});
+    Dimension dimensionFromObject = dimension as Dimension;
+    var bodyReturned = await restConnection.runGet(
+        'api/v1/Dimensions(\'${dimensionFromObject.name}\')/DefaultHierarchy',
+        parameters: parametersMap);
+    var decodedJson = jsonDecode(await transformJson(bodyReturned));
+    return decodedJson['Name'];
   }
 
 }

@@ -1,9 +1,9 @@
-import 'package:mockito/mockito.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:random_string/random_string.dart' as random;
 import 'package:tm1_dart/Objects/Hierarchy.dart';
 import 'package:tm1_dart/Services/HierarchyService.dart';
 import 'package:tm1_dart/Services/RESTConnection.dart';
-import 'package:random_string/random_string.dart' as random;
 
 import '../UtilsForTest/ConnectionUtils.dart';
 
@@ -45,14 +45,18 @@ void main() async {
     var printout = await HierarchyService().getAttributes(hierarchy);
     expect(printout, expectedElements);
   });
+  String name = random.randomString(5);
+  Map<String, dynamic> testMap2 = {'Name': name};
+  Hierarchy hierarchy2 = Hierarchy.fromJson('actvsbud', testMap2);
   test('check if hierarchy creation works', () async {
-    String name = random.randomString(5);
-    print(name);
-    Map<String, dynamic> testMap = {'Name': name};
-    Hierarchy hierarchy = Hierarchy.fromJson('actvsbud', testMap);
-    var printout = await HierarchyService().create(hierarchy);
+    var printout = await HierarchyService().create(hierarchy2);
     expect(printout, true);
   });
+  test('check if hierarchy deletion works', () async {
+    var printout = await HierarchyService().delete(hierarchy2);
+    expect(printout, true);
+  });
+
   test('check if getHierarchy works', () async {
     Hierarchy hierarchyNew = await HierarchyService().getHierarchy('actvsbud', 'actvsbud');
     expect(hierarchy.name,hierarchyNew.name);
