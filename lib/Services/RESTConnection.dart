@@ -1,8 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import '../Utils/ByteConverter.dart';
-import 'dart:io';
-import 'dart:convert';
 
 class RESTConnection {
   ///this class supposed to put together all utlis necesssary to make connection live
@@ -95,8 +95,6 @@ class RESTConnection {
 
   Future<HttpClientResponse> runGet(String baseURL,
       {Map<String, dynamic> parameters}) async {
-
-
     HttpClient client = new HttpClient();
     client.badCertificateCallback =
         (X509Certificate cert, String host, int port) {
@@ -112,6 +110,23 @@ class RESTConnection {
     _addHeaders(request);
     var response = await request.close();
 
+    return response;
+  }
+
+  Future<HttpClientResponse> runDelete(String baseURL,
+      {Map<String, dynamic> parameters}) async {
+    HttpClient client = new HttpClient();
+    client.badCertificateCallback =
+        (X509Certificate cert, String host, int port) {
+      return true;
+    };
+    Uri tempUrl = url.replace(path: baseURL);
+    if (parameters != null) {
+      tempUrl = _replaceUnwantedStrings(tempUrl, parameters, baseURL);
+    }
+    var request = await client.deleteUrl(tempUrl);
+    _addHeaders(request);
+    var response = await request.close();
     return response;
   }
 

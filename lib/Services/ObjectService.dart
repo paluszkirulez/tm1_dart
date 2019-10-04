@@ -18,6 +18,16 @@ abstract class ObjectService {
     }
   }
 
+  Future<bool> delete(TM1Object tm1object) async {
+    var request = tm1object.createTM1Path() + '(\'${tm1object.name}\')';
+    if (await checkIfExists(tm1object)) {
+      await restConnection.runDelete(request);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<List<String>> getObjects(TM1Object objectClass,
       {bool getControl=false}) async {
     ///general process to get list of entities, works for Cubes, Dimensions and Chores

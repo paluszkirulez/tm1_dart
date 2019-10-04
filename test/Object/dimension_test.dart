@@ -41,14 +41,21 @@ void main() async {
     printout.sort((a, b) => a.hashCode.compareTo(b.hashCode));
     expect(printout, expectedElements);
   });
+
+  String randomDim = randomAlpha(5);
   test('check if dimension is created', () async {
-    String randomDim = randomAlpha(5);
-    print(randomDim);
     Dimension randomDimension = Dimension.fromJson({'Name': randomDim});
     bool result = await DimensionService().create(randomDimension);
     bool result2 = await DimensionService().checkIfExists(randomDimension);
     expect(result, true);
     expect(result2, true);
+  });
+  test('check if dimension is created', () async {
+    Dimension randomDimension = Dimension.fromJson({'Name': randomDim});
+    bool result = await DimensionService().delete(randomDimension);
+    bool result2 = await DimensionService().checkIfExists(randomDimension);
+    expect(result, true);
+    expect(result2, false);
   });
 
 
