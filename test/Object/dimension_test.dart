@@ -1,9 +1,9 @@
-import 'package:tm1_dart/Objects/Dimension.dart';
-import 'package:tm1_dart/Services/DimensionService.dart';
-import 'package:tm1_dart/Services/HierarchyService.dart';
-import 'package:tm1_dart/Services/RESTConnection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:random_string/random_string.dart';
+import 'package:tm1_dart/Objects/Dimension.dart';
+import 'package:tm1_dart/Services/DimensionService.dart';
+import 'package:tm1_dart/Services/RESTConnection.dart';
+
 import '../UtilsForTest/ConnectionUtils.dart';
 
 void main() async {
@@ -41,7 +41,6 @@ void main() async {
     printout.sort((a, b) => a.hashCode.compareTo(b.hashCode));
     expect(printout, expectedElements);
   });
-
   String randomDim = randomAlpha(5);
   test('check if dimension is created', () async {
     Dimension randomDimension = Dimension.fromJson({'Name': randomDim});
@@ -57,7 +56,4 @@ void main() async {
     expect(result, true);
     expect(result2, false);
   });
-
-
-
 }
