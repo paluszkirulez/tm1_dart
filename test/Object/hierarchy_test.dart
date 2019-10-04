@@ -61,8 +61,22 @@ void main() async {
     String actualResult = await HierarchyService().getDefaultMember(hierarchy);
     expect(actualResult,'Actual');
   });
-  test('get all subsets f a given dimension', () async {
-
+  test('get all subsets for a given hierarchy', () async {
+    List<String> actualResult = await HierarchyService().getSubsets(hierarchy);
+    expect(actualResult, ['All Members', 'test_alias', 'test_subset_public']);
   });
+  test('check if hierarchy contains given element', () async {
+    String trueElement = 'Actual';
+    String falseElement = 'asadadda';
+    bool trueBool = await HierarchyService().checkIfContainsElement(
+        hierarchy, trueElement);
+    bool falseBool = await HierarchyService().checkIfContainsElement(
+        hierarchy, falseElement);
+    expect(trueBool, true);
+    expect(falseBool, false);
+  });
+  //TODO add getter for hierarchy details
+  //TODO add post/update/remove methods
+
 }
 //hierarchy tests

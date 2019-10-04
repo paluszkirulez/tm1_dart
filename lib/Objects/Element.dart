@@ -12,6 +12,7 @@ class Element extends TM1Object {
   final int level;
   final String dimension;
   final String hierarchy;
+  Map<String, dynamic> attributes;
 
   @override
   String createTM1Path() {
@@ -21,15 +22,16 @@ class Element extends TM1Object {
   //List<String> availableTypes = ElementType.values.map((e)=>e.toString());
 
   Element(this.dimension, this.hierarchy,
-      {this.name, this.uniqueName, this.elementType, this.index, this.level});
+      {this.name, this.uniqueName, this.elementType, this.index, this.level, this.attributes});
 
-  factory Element.fromJson(
-      String dimension, String hierarchy, Map<String, dynamic> parsedJson) {
+  factory Element.fromJson(String dimension, String hierarchy,
+      Map<String, dynamic> parsedJson, {bool withAttributes = false}) {
     return new Element(dimension, hierarchy,
         name: parsedJson['Name'],
         uniqueName: parsedJson['UniqueName'],
         elementType: parsedJson['Type'],
-        level: parsedJson['Level']);
+        level: parsedJson['Level'],
+        attributes: withAttributes ? parsedJson['Attributes'] : new Map());
   }
 
   @override

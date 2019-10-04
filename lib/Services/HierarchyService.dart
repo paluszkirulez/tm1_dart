@@ -82,7 +82,7 @@ class HierarchyService extends ObjectService {
   Future<List<String>> getSubsets(TM1Object hierarchy, {getControl}) async {
     //returns all elements as list
     Map<String, dynamic> parametersMap = {};
-    parametersMap.addAll({'\$select': 'Name,Type'});
+    parametersMap.addAll({'\$select': 'Name'});
     Hierarchy hierarchyFromObject = hierarchy as Hierarchy;
     var bodyReturned = await restConnection.runGet(
         'api/v1/Dimensions(\'${hierarchyFromObject
@@ -97,6 +97,14 @@ class HierarchyService extends ObjectService {
             .toString()
             .length - 1))
         .toList();
+
     return namesList;
+  }
+
+  Future<bool> checkIfContainsElement(Hierarchy hierarchy,
+      String element) async {
+    Map<String, dynamic> allElements = await getElementsAsaMap(hierarchy);
+    bool result = allElements.keys.contains(element);
+    return result;
   }
 }

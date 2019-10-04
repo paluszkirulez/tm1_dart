@@ -15,12 +15,58 @@ void main() async{
     Element element = Element.fromJson('account','account',testMap);
     expect(element.name, 'aa');
   });
+  test('Check if element is get from server', () async {
+    Map<String, dynamic> testMap = {
+      'Name': 'aa',
+      'UniqueName': 'uName',
+      'Type': 'Numeric',
+      'Index': 0,
+      'Level': 0
+    };
+    Element element = await ElementService().getElement(
+        'account1', 'account1', 'Price');
+    expect(element.name, 'Price');
+    expect(element.elementType, 'Numeric');
+  });
+  test('Check if element is get from server with attributes', () async {
+    Map<String, dynamic> testMap = {
+      'Name': 'aa',
+      'UniqueName': 'uName',
+      'Type': 'Numeric',
+      'Index': 0,
+      'Level': 0
+    };
+    Element element = await ElementService().getElement(
+        'account1', 'account1', 'Price', withAttributes: true);
+    expect(element.name, 'Price');
+    expect(element.elementType, 'Numeric');
+    expect(element.attributes.containsValue('Price'), true);
+    expect(element.attributes.containsKey('Caption'), true);
+  });
 
-  test('Check if element retrieves all members underneath',(){
+
+  test('Check if element retrieves all members underneath', () async {
     Map<String,dynamic> testMap = {'Name':'Gross Margin','UniqueName':'uName','Type':'Numeric','Index':0,'Level':0};
     Element element = Element.fromJson('account1', 'account1',testMap);
-    var printout = ElementService().getMembersUnderConsolidation(element, maxDepth: 3);
-    print(printout.then((s)=>print(s)));
-    expect(element.name, 'Gross Margin');
+    var printout = await ElementService().getMembersUnderConsolidation(
+        element, maxDepth: 3);
+    List<String> actualResult = printout.keys.toList();
+    expect(actualResult, ['Sales', 'Variable Costs', 'aa', 'aaa']);
   });
+  test('Check if element retrieves only leaves members underneath', () async {
+    Map<String, dynamic> testMap = {
+      'Name': 'Gross Margin',
+      'UniqueName': 'uName',
+      'Type': 'Numeric',
+      'Index': 0,
+      'Level': 0
+    };
+    Element element = Element.fromJson('account1', 'account1', testMap);
+    var printout = await ElementService().getMembersUnderConsolidation(
+        element, maxDepth: 3, leavesOnly: true);
+    List<String> actualResult = printout.keys.toList();
+    expect(actualResult, ['Sales', 'Variable Costs', 'aaa']);
+  });
+//TODO add post/update/delete methods
+
 }

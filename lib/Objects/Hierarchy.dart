@@ -8,10 +8,14 @@ import 'Subset.dart';
 class Hierarchy extends TM1Object {
   ///abstraction of hierarchy, consist of elements and keeps reference
   ///to its dimension
+
+
+  //TODO check if in all palces list of elements consist of strings,not actual objects
   final String classType = 'Hierarchy';
   final String name;
   final String dimension;
   List<String> elements;
+  List<String> subsets;
 
   Hierarchy(this.dimension, {this.name});
 
