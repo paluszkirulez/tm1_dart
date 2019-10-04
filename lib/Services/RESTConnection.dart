@@ -75,6 +75,13 @@ class RESTConnection {
     return restConnection;
   }
 
+  Future<HttpClientResponse> logout() {
+    String uri = '/api/v1/ActiveSession/tm1.Close';
+    Map<String, dynamic> parametersMap = {};
+    parametersMap.addAll({'connection': 'close'});
+    return runPost(uri, parametersMap, json.encode(parametersMap));
+  }
+
   void _addHeaders(HttpClientRequest request) {
     for (String header in HEADERS.keys) {
       request.headers.add(header, HEADERS[header]);
