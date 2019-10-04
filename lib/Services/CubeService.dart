@@ -1,9 +1,13 @@
 import 'dart:convert';
 
 import 'package:tm1_dart/Objects/Cube.dart';
+import 'package:tm1_dart/Objects/Hierarchy.dart';
 import 'package:tm1_dart/Objects/TM1Object.dart';
+import 'package:tm1_dart/Services/DimensionService.dart';
+import 'package:tm1_dart/Services/HierarchyService.dart';
 import 'package:tm1_dart/Services/ObjectService.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
+import 'dart:math';
 
 class CubeService extends ObjectService{
   Future<Cube> getCube(String cubeName) async{
@@ -30,5 +34,23 @@ class CubeService extends ObjectService{
         .map((name) => name.toString().substring(7, name.toString().length - 1))
         .toList();
     return namesList;
+  }
+
+  Future<List<String>> getRandomIntersection(TM1Object cube) async {
+    /// random intersaction of a cube, used for testing
+    /// not optimized
+    ///
+
+    List<String> dimensionsInCube = await getDimensions(cube);
+    List<String> returnedElements = [];
+    for (String dimension in dimensionsInCube) {
+      Hierarchy hierarchy = await HierarchyService().getHierarchy(
+          dimension, dimension);
+      List<String> elements = await HierarchyService().getElements(hierarchy);
+
+      String element = elements[Random().nextInt(elements.length)];
+      returnedElements.add(element);
+    }
+    return returnedElements;
   }
 }
