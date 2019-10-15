@@ -1,10 +1,8 @@
 import 'dart:convert';
 
-import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Hierarchy.dart';
 import 'package:tm1_dart/Objects/TM1Object.dart';
 import 'package:tm1_dart/Services/ObjectService.dart';
-import 'package:tm1_dart/Services/RESTConnection.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
 
 class HierarchyService extends ObjectService {
@@ -39,9 +37,17 @@ class HierarchyService extends ObjectService {
     return namesList;
   }
 
-  Future<Map<String, dynamic>> getElementsAsaMap(TM1Object tm1object) async {
+  Future<int> getNumberOfElements(TM1Object hierarchy, {getControl}) async {
+    List<String> namesList = await getElements(
+        hierarchy, getControl: getControl);
+    return namesList.length;
+  }
+
+  Future<Map<String, dynamic>> getElementsAsaMap(TM1Object tm1object,
+      {getControl}) async {
     //returns elements as name:type map
-    List<String> namesList = await getElements(tm1object);
+    List<String> namesList = await getElements(
+        tm1object, getControl: getControl);
     Map<String, dynamic> nameTypeMap = <String, dynamic>{};
     List<String> tempList = <String>[];
     for (int a = 0; a < namesList.length; a++) {
@@ -101,6 +107,11 @@ class HierarchyService extends ObjectService {
     return namesList;
   }
 
+  Future<int> getNumberOfSubsets(TM1Object hierarchy, {getControl}) async {
+    List<String> namesList = await getSubsets(
+        hierarchy, getControl: getControl);
+    return namesList.length;
+  }
   Future<bool> checkIfContainsElement(Hierarchy hierarchy,
       String element) async {
     Map<String, dynamic> allElements = await getElementsAsaMap(hierarchy);

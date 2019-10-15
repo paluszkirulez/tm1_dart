@@ -29,12 +29,18 @@ void main() async {
   });
   test('check if correct hierarchies are returned', () async {
     List<String> expectedElements = [
-      'actvsbud',
+      'Sh1^V',
+      'V`Xmx',
+      'StvqT',
       'actvsbud2',
-      'Leaves',
-      'O#3)3',
       '=Z%G1',
+      'O#3)3',
+      '`u&7B',
+      'Leaves',
+      'actvsbud',
       '_a.Kj'
+
+
     ];
     expectedElements.sort((a, b) => a.hashCode.compareTo(b.hashCode));
     var printout = await DimensionService().getHierarchies(dimension);

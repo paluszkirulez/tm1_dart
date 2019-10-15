@@ -31,7 +31,7 @@ void main() async {
     var printout = await HierarchyService().getElementsAsaMap(hierarchy);
     expect(printout, expectedElements);
   });
-  test('check if hierarchy funtion returns a list of attributes', () async {
+  test('check if hierarchy function returns a list of attributes', () async {
     Map<String, dynamic> expectedElements = {
       'Format': 'String',
       'permittedcalculations_n_and_c': 'String',
@@ -69,6 +69,16 @@ void main() async {
     List<String> actualResult = await HierarchyService().getSubsets(hierarchy);
     expect(actualResult, ['All Members', 'test_alias', 'test_subset_public']);
   });
+  test('get number of elements', () async {
+    var actualResult = await HierarchyService().getNumberOfElements(hierarchy);
+    expect(actualResult, 3);
+  });
+  test('get number of subsets', () async {
+    var actualResult = await HierarchyService().getNumberOfSubsets(hierarchy);
+    expect(actualResult, 3);
+  });
+
+
   test('check if hierarchy contains given element', () async {
     String trueElement = 'Actual';
     String falseElement = 'asadadda';
