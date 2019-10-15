@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:random_string/random_string.dart';
 import 'package:tm1_dart/Objects/Dimension.dart';
+import 'package:tm1_dart/Objects/Hierarchy.dart';
 import 'package:tm1_dart/Services/DimensionService.dart';
 import 'package:tm1_dart/Services/RESTConnection.dart';
 
@@ -29,21 +30,27 @@ void main() async {
   });
   test('check if correct hierarchies are returned', () async {
     List<String> expectedElements = [
+
       'Sh1^V',
       'V`Xmx',
       'StvqT',
+      'NygYB',
       'actvsbud2',
       '=Z%G1',
       'O#3)3',
       '`u&7B',
       'Leaves',
+      'Rqm!y',
       'actvsbud',
-      '_a.Kj'
+      '_a.Kj',
+      'Ek+[g'
 
 
     ];
     expectedElements.sort((a, b) => a.hashCode.compareTo(b.hashCode));
-    var printout = await DimensionService().getHierarchies(dimension);
+    List<Hierarchy> hierarchyList = await DimensionService().getHierarchies(
+        dimension);
+    var printout = hierarchyList.map((a) => a.name).toList();
     printout.sort((a, b) => a.hashCode.compareTo(b.hashCode));
     expect(printout, expectedElements);
   });

@@ -1,11 +1,11 @@
-import 'TM1Object.dart';
 import 'Hierarchy.dart';
+import 'TM1Object.dart';
 class Dimension extends TM1Object{
   ///this class is created as a dimension blueprint
   /// beside name it contains list of hierarchies (not elements)
   final String classType = 'Dimension';
   final String name;
-  List<String> hierarchies = [];
+  List<Hierarchy> hierarchies = [];
 
   Dimension({this.name});
 
