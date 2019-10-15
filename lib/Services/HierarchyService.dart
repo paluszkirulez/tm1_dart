@@ -118,4 +118,22 @@ class HierarchyService extends ObjectService {
     bool result = allElements.keys.contains(element);
     return result;
   }
+
+  Future<List<Map<String, dynamic>>> getEdges(TM1Object hierarchy) async {
+    Hierarchy hierarchyFromObject = hierarchy as Hierarchy;
+    var bodyReturned = await restConnection.runGet(
+        'api/v1/Dimensions(\'${hierarchyFromObject
+            .dimension}\')/Hierarchies(\'${hierarchyFromObject
+            .name}\')/Edges');
+
+    var decodedJson = jsonDecode(await transformJson(bodyReturned));
+
+    List<dynamic> listOfStrings = decodedJson['value'];
+    List<Map<String, dynamic>> objectsMap = [];
+    for (var i in listOfStrings) {
+      Map<String, dynamic> pairs = i;
+      objectsMap.add(pairs);
+    }
+    return objectsMap;
+  }
 }

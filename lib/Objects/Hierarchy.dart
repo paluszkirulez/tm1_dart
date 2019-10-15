@@ -13,6 +13,7 @@ class Hierarchy extends TM1Object {
   final String dimension;
   List<String> elements;
   List<String> subsets;
+  List<Map<String, dynamic>> edges;
 
   Hierarchy(this.dimension, {this.name});
 

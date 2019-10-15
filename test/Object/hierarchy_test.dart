@@ -89,8 +89,15 @@ void main() async {
     expect(trueBool, true);
     expect(falseBool, false);
   });
+  test('check if correct edges are returned', () async {
+    List<Map<String, dynamic>> listOfMaps = await HierarchyService().getEdges(
+        hierarchy);
+    print(listOfMaps.toString());
+    expect(listOfMaps.length, 2);
+  });
+
   //TODO add getter for hierarchy details
-  //TODO add post/update/remove methods
+  //TODO add post/update methods
 
 }
 //hierarchy tests
