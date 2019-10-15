@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:random_string/random_string.dart' as random;
+import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Hierarchy.dart';
 import 'package:tm1_dart/Services/HierarchyService.dart';
 import 'package:tm1_dart/Services/RESTConnection.dart';
@@ -23,12 +24,15 @@ void main() async {
   Hierarchy hierarchy = Hierarchy.fromJson('actvsbud', testMap);
 
   test('check if correct elements of hierarchy are returned', () async {
-    Map<String,dynamic> expectedElements = {
-    'Actual':'Numeric',
-    'Budget':'Numeric',
-    'Variance': 'Consolidated'
-    };
-    var printout = await HierarchyService().getElementsAsaMap(hierarchy);
+    List<String> expectedElements = [
+      'Actual',
+      'Budget',
+      'Variance'
+    ];
+
+    Map<String, Element> mapOfElements = await HierarchyService().getElements(
+        hierarchy);
+    List<String> printout = mapOfElements.keys.toList();
     expect(printout, expectedElements);
   });
   test('check if hierarchy function returns a list of attributes', () async {
@@ -45,7 +49,7 @@ void main() async {
     var printout = await HierarchyService().getAttributes(hierarchy);
     expect(printout, expectedElements);
   });
-  String name = random.randomString(5);
+  String name = random.randomString(5, from: 97, to: 122);
   Map<String, dynamic> testMap2 = {'Name': name};
   Hierarchy hierarchy2 = Hierarchy.fromJson('actvsbud', testMap2);
   test('check if hierarchy creation works', () async {
@@ -92,7 +96,6 @@ void main() async {
   test('check if correct edges are returned', () async {
     List<Map<String, dynamic>> listOfMaps = await HierarchyService().getEdges(
         hierarchy);
-    print(listOfMaps.toString());
     expect(listOfMaps.length, 2);
   });
 

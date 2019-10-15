@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Hierarchy.dart';
 import 'package:tm1_dart/Objects/TM1Object.dart';
+import 'package:tm1_dart/Services/ElementService.dart';
 import 'package:tm1_dart/Services/ObjectService.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
 
@@ -21,7 +23,8 @@ class HierarchyService extends ObjectService {
     return hierarchy;
   }
 
-  Future<List<String>> getElements(TM1Object hierarchy, {getControl}) async {
+  Future<Map<String, Element>> getElements(TM1Object hierarchy,
+      {getControl}) async {
     //returns all elements as list
     Map<String, dynamic> parametersMap = {};
     parametersMap.addAll({'\$select': 'Name,Type'});
@@ -30,33 +33,25 @@ class HierarchyService extends ObjectService {
         'api/v1/Dimensions(\'${hierarchyFromObject.dimension}\')/Hierarchies(\'${hierarchyFromObject.name}\')/Elements',
         parameters: parametersMap);
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
-    List<dynamic> objectsMap = decodedJson['value'];
-    var namesList = objectsMap
-        .map((name) => name.toString().substring(7, name.toString().length - 1))
-        .toList();
-    return namesList;
+    List<dynamic> listOfStrings = decodedJson['value'];
+    Map<String, Element> objectsMap = {};
+    for (var i in listOfStrings) {
+      Map<String, dynamic> pair = i;
+      String name = pair['Name'];
+      Element nameElement = await ElementService().getElement(
+          hierarchyFromObject.dimension, hierarchyFromObject.name, name);
+      objectsMap.addAll({name: nameElement});
+    }
+
+    return objectsMap;
   }
 
   Future<int> getNumberOfElements(TM1Object hierarchy, {getControl}) async {
-    List<String> namesList = await getElements(
+    Map<String, Element> namesList = await getElements(
         hierarchy, getControl: getControl);
     return namesList.length;
   }
 
-  Future<Map<String, dynamic>> getElementsAsaMap(TM1Object tm1object,
-      {getControl}) async {
-    //returns elements as name:type map
-    List<String> namesList = await getElements(
-        tm1object, getControl: getControl);
-    Map<String, dynamic> nameTypeMap = <String, dynamic>{};
-    List<String> tempList = <String>[];
-    for (int a = 0; a < namesList.length; a++) {
-      tempList = namesList[a].split(', ');
-      nameTypeMap.addAll(
-          {tempList[0]: tempList[1].replaceRange(0, 'Type: '.length, '')});
-    }
-    return nameTypeMap;
-  }
 
 
 
@@ -114,7 +109,7 @@ class HierarchyService extends ObjectService {
   }
   Future<bool> checkIfContainsElement(Hierarchy hierarchy,
       String element) async {
-    Map<String, dynamic> allElements = await getElementsAsaMap(hierarchy);
+    Map<String, Element> allElements = await getElements(hierarchy);
     bool result = allElements.keys.contains(element);
     return result;
   }

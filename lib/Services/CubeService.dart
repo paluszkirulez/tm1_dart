@@ -1,13 +1,13 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:tm1_dart/Objects/Cube.dart';
+import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Hierarchy.dart';
 import 'package:tm1_dart/Objects/TM1Object.dart';
-import 'package:tm1_dart/Services/DimensionService.dart';
 import 'package:tm1_dart/Services/HierarchyService.dart';
 import 'package:tm1_dart/Services/ObjectService.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
-import 'dart:math';
 
 class CubeService extends ObjectService{
   Future<Cube> getCube(String cubeName) async{
@@ -46,7 +46,9 @@ class CubeService extends ObjectService{
     for (String dimension in dimensionsInCube) {
       Hierarchy hierarchy = await HierarchyService().getHierarchy(
           dimension, dimension);
-      List<String> elements = await HierarchyService().getElements(hierarchy);
+      Map<String, Element> listOfElement = await HierarchyService().getElements(
+          hierarchy);
+      List<String> elements = listOfElement.keys;
 
       String element = elements[Random().nextInt(elements.length)];
       returnedElements.add(element);

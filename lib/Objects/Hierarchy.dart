@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'Element.dart';
 import 'TM1Object.dart';
 
 class Hierarchy extends TM1Object {
@@ -11,7 +12,7 @@ class Hierarchy extends TM1Object {
   final String classType = 'Hierarchy';
   final String name;
   final String dimension;
-  List<String> elements;
+  Map<String, Element> elements;
   List<String> subsets;
   List<Map<String, dynamic>> edges;
 
