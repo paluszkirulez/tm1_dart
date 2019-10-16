@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tm1_dart/Services/HierarchyService.dart';
+
 import './Services/RESTConnection.dart';
-import 'Services/ObjectService.dart';
-import 'Services/ElementService.dart';
 import 'Objects/Element.dart' as Elements;
 void main() => runApp(MyApp());
 
@@ -61,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
       String body ='{\"MDX\": \"SELECT {[actvsbud].[Actual]} ON COLUMNS, {[month].[jan]} ON ROWS FROM [PNLCube]\"}';
       RESTConnection restConnection = RESTConnection.initialize("https", ip, 8010,  "admin", "apple", true, "", false, false);
       Map<String,dynamic> testMap = {'Name':'Gross Margin','UniqueName':'uName','Type':'Numeric','Index':0,'Level':0};
-      Elements.Element element = Elements.Element.fromJson('account1', 'account1',testMap);
+      Elements.Element element = Elements.Element.fromJson(testMap);
       var printout = HierarchyService().getHierarchy('account1', 'account1');
       print(printout.then((s)=>print(s)));
 

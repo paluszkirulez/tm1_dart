@@ -20,36 +20,33 @@ void main() async {
       false,
       false);
   Map<String, dynamic> testMap = {'Name': 'actvsbud'};
-  Dimension dimension = Dimension.fromJson(testMap);
+  String dimensionName = 'actvsbud';
+  Dimension dimension = await DimensionService().getDimension('actvsbud');
   test('check if correct dimension is returned', () async {
-    Map<String,dynamic> expectedElements = {'Name':'actvsbud'
-    };
-    Dimension expectedDimension = Dimension.fromJson(expectedElements);
-    var printout = await DimensionService().getDimension('actvsbud');
-    expect(printout.name, expectedDimension.name);
+    Dimension dimension = await DimensionService().getDimension('actvsbud');
+    expect(dimension.name, 'actvsbud');
   });
   test('check if correct hierarchies are returned', () async {
     List<String> expectedElements = [
-
       'Sh1^V',
       'V`Xmx',
       'StvqT',
       'NygYB',
       'actvsbud2',
       '=Z%G1',
+      'wnixp',
       'O#3)3',
       '`u&7B',
       'Leaves',
+      'hofyd',
       'Rqm!y',
       'actvsbud',
       '_a.Kj',
       'Ek+[g'
-
-
     ];
     expectedElements.sort((a, b) => a.hashCode.compareTo(b.hashCode));
     List<Hierarchy> hierarchyList = await DimensionService().getHierarchies(
-        dimension);
+        dimensionName);
     var printout = hierarchyList.map((a) => a.name).toList();
     printout.sort((a, b) => a.hashCode.compareTo(b.hashCode));
     expect(printout, expectedElements);

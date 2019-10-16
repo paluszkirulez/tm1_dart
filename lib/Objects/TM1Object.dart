@@ -3,13 +3,15 @@ abstract class TM1Object{
   final String classType = '';
 
 
-  String body();
+  Map<String, dynamic> toJson();
 
   String createTM1Path(){
     return 'api/v1/$classType';
   }
   /// abstraction of all classes that tm1 consist off
   TM1Object();
+
+  String body();
 
 
 

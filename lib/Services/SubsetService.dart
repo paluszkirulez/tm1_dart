@@ -1,9 +1,9 @@
 import 'dart:convert';
 
+import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Subset.dart';
-import 'package:tm1_dart/Objects/TM1Object.dart';
+import 'package:tm1_dart/Services/ElementService.dart';
 import 'package:tm1_dart/Services/ObjectService.dart';
-import 'package:tm1_dart/Services/RESTConnection.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
 
 class SubsetService extends ObjectService {
@@ -17,38 +17,43 @@ class SubsetService extends ObjectService {
     var bodyReturned = await restConnection.runGet(
         'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Subsets(\'$subsetName\')',
         parameters: parametersMap);
-    var decodedJson =  jsonDecode(await transformJson(bodyReturned));
+    var decodedJson = jsonDecode(await transformJson(bodyReturned));
     //print(dimensionName+' '+decodedJson.toString()+' '+parametersMap.toString());
-    Subset subset = Subset.fromJson(dimensionName, hierarchyName, decodedJson);
+    Map<String, dynamic> objectMap = {};
+    objectMap.addAll(decodedJson);
+    Map<String, Element> mapOfElements =
+    await getElements(dimensionName, hierarchyName, subsetName);
+    objectMap.addAll({'Elements': mapOfElements});
+    if ((objectMap['expression'] == '') ||
+        (objectMap['expression'] == '[account1].MEMBERS')) {
+      objectMap.addAll({'isDynamic': false});
+    }
+    Subset subset = Subset.fromJson(objectMap);
     return subset;
   }
-  Future<List<String>> getElements(TM1Object subset, {getControl}) async {
+
+  Future<Map<String, Element>> getElements(String dimensionName,
+      String hierarchyName, String subsetName,
+      {getControl}) async {
     Map<String, dynamic> parametersMap = {};
     parametersMap.addAll({'\$select': 'Name,Type'});
-    Subset subsetFromObject = subset as Subset;
+
     var bodyReturned = await restConnection.runGet(
-        subset.createTM1Path() + '(\'${subsetFromObject.name}\')/Elements',
+        'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Subsets' +
+            '(\'${subsetName}\')/Elements',
         parameters: parametersMap);
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
-    List<dynamic> objectsMap = decodedJson['value'];
-    var namesList = objectsMap
-        .map((name) => name.toString().substring(7, name.toString().length - 1))
-        .toList();
-    return namesList;
+    List<dynamic> listOfStrings = decodedJson['value'];
+    Map<String, Element> objectsMap = {};
+    for (var i in listOfStrings) {
+      Map<String, dynamic> pair = i;
+      String name = pair['Name'];
+      Element nameElement =
+      await ElementService().getElement(dimensionName, hierarchyName, name);
 
-  }
-
-  Future<Map<String, dynamic>> getElementsAsaMap(TM1Object tm1object) async {
-    //returns elements as name:type map
-    List<String> namesList = await getElements(tm1object);
-    Map<String, dynamic> nameTypeMap = <String, dynamic>{};
-    List<String> tempList = <String>[];
-    for (int a = 0; a < namesList.length; a++) {
-      tempList = namesList[a].split(', ');
-      nameTypeMap.addAll(
-          {tempList[0]: tempList[1].replaceRange(0, 'Type: '.length, '')});
+      objectsMap.addAll({name: nameElement});
     }
-    return nameTypeMap;
-  }
 
+    return objectsMap;
+  }
 }

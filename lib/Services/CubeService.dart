@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:tm1_dart/Objects/Cube.dart';
+import 'package:tm1_dart/Objects/Dimension.dart';
 import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Hierarchy.dart';
-import 'package:tm1_dart/Objects/TM1Object.dart';
+import 'package:tm1_dart/Services/DimensionService.dart';
 import 'package:tm1_dart/Services/HierarchyService.dart';
 import 'package:tm1_dart/Services/ObjectService.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
@@ -14,41 +15,48 @@ class CubeService extends ObjectService{
     var bodyReturned = await restConnection.runGet(
         'api/v1/Cubes(\'$cubeName\')');
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
-    Cube cube = Cube.fromJson(decodedJson);
-    cube.dimensions = await getDimensions(cube);
+    Map<String, dynamic> objectMap = {};
+    objectMap.addAll(decodedJson);
+    objectMap.addAll({'Dimensions': await getDimensions(cubeName)});
+    Cube cube = Cube.fromJson(objectMap);
     return cube;
   }
 
 
-  Future<List<String>> getDimensions(TM1Object cube, {getControl}) async {
+  Future<List<Dimension>> getDimensions(String cubeName, {getControl}) async {
     //return list of dimensions
     Map<String, dynamic> parametersMap = {};
     parametersMap.addAll({'\$select': 'Name'});
-    Cube cubeFromObject = cube as Cube;
+
     var bodyReturned = await restConnection.runGet(
-        cubeFromObject.createTM1Path()+'(\'${cube.name}\')/Dimensions',
+        'api/v1/Cubes' + '(\'${cubeName}\')/Dimensions',
         parameters: parametersMap);
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
-    List<dynamic> objectsMap = decodedJson['value'];
-    var namesList = objectsMap
-        .map((name) => name.toString().substring(7, name.toString().length - 1))
-        .toList();
-    return namesList;
+    List<dynamic> listOfStrings = decodedJson['value'];
+    List<Dimension> objectsMap = [];
+    for (var i in listOfStrings) {
+      Map<String, dynamic> pair = i;
+      String name = pair['Name'];
+      Dimension dimension = await DimensionService().getDimension(name);
+      objectsMap.add(dimension);
+    }
+
+    return objectsMap;
   }
 
-  Future<List<String>> getRandomIntersection(TM1Object cube) async {
+  Future<List<String>> getRandomIntersection(String cubeName) async {
     /// random intersaction of a cube, used for testing
     /// not optimized
     ///
-
-    List<String> dimensionsInCube = await getDimensions(cube);
+    List<Dimension> dimensions = await getDimensions(cubeName);
+    List<String> dimensionsInCube = dimensions.map((a) => a.name).toList();
     List<String> returnedElements = [];
     for (String dimension in dimensionsInCube) {
       Hierarchy hierarchy = await HierarchyService().getHierarchy(
           dimension, dimension);
       Map<String, Element> listOfElement = await HierarchyService().getElements(
-          hierarchy);
-      List<String> elements = listOfElement.keys;
+          dimension, hierarchy.name);
+      List<String> elements = listOfElement.keys.toList();
 
       String element = elements[Random().nextInt(elements.length)];
       returnedElements.add(element);

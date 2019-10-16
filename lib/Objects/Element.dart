@@ -1,17 +1,30 @@
-import 'TM1Object.dart';
-import '../Utils/ElementType.dart';
 import 'dart:convert';
 
+import 'package:json_annotation/json_annotation.dart';
+
+import 'TM1Object.dart';
+
+part 'Element.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class Element extends TM1Object {
   ///class that represents element
   final String classType = 'Element';
+  @JsonKey(name: 'Name')
   final String name;
+  @JsonKey(name: 'UniqueName')
   final String uniqueName;
+  @JsonKey(name: 'Type')
   final String elementType;
+  @JsonKey(name: 'Index')
   final int index;
+  @JsonKey(name: 'Level')
   final int level;
+  @JsonKey(name: 'dimensionName')
   final String dimension;
+  @JsonKey(name: 'hierarchyName')
   final String hierarchy;
+  @JsonKey(name: 'Attributes')
   Map<String, dynamic> attributes;
 
   @override
@@ -19,32 +32,24 @@ class Element extends TM1Object {
     return 'api/v1/Dimensions(\'$dimension\')/Hierarchies(\'$hierarchy\')/Elements';
   }
 
-  //List<String> availableTypes = ElementType.values.map((e)=>e.toString());
+  Element(this.name, this.uniqueName, this.elementType,
+      this.index, this.level, this.dimension, this.hierarchy,
+      this.attributes);
 
-  Element(this.dimension, this.hierarchy,
-      {this.name, this.uniqueName, this.elementType, this.index, this.level, this.attributes});
 
-  factory Element.fromJson(String dimension, String hierarchy,
-      Map<String, dynamic> parsedJson, {bool withAttributes = false}) {
-    return new Element(dimension, hierarchy,
-        name: parsedJson['Name'],
-        uniqueName: parsedJson['UniqueName'],
-        elementType: parsedJson['Type'],
-        level: parsedJson['Level'],
-        attributes: withAttributes ? parsedJson['Attributes'] : new Map());
-  }
+  factory Element.fromJson(Map<String, dynamic> json) =>
+      _$ElementFromJson(json);
 
-  @override
-  String body() {
-    Map<String, dynamic> bodyMap = {
-      'Name': name,
-      'Type': elementType
-    };
-    return json.encode(bodyMap);
-  }
+  Map<String, dynamic> toJson() => _$ElementToJson(this);
+
 
   @override
   String toString() {
     return 'Element{name: $name, uniqueName: $uniqueName, elementType: $elementType, index: $index, level: $level}';
+  }
+
+  @override
+  String body() {
+    return json.encode(toJson());
   }
 }

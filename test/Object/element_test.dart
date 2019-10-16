@@ -17,25 +17,9 @@ void main() async {
       "",
       false,
       false);
-  test('Check if element is created from map', () {
-    Map<String, dynamic> testMap = {
-      'Name': 'aa',
-      'UniqueName': 'uName',
-      'Type': 'Numeric',
-      'Index': 0,
-      'Level': 0
-    };
-    Element element = Element.fromJson('account', 'account', testMap);
-    expect(element.name, 'aa');
-  });
+
   test('Check if element is get from server', () async {
-    Map<String, dynamic> testMap = {
-      'Name': 'aa',
-      'UniqueName': 'uName',
-      'Type': 'Numeric',
-      'Index': 0,
-      'Level': 0
-    };
+
     Element element =
     await ElementService().getElement('account1', 'account1', 'Price');
     expect(element.name, 'Price');
@@ -58,14 +42,8 @@ void main() async {
   });
 
   test('Check if element retrieves all members underneath', () async {
-    Map<String, dynamic> testMap = {
-      'Name': 'Gross Margin',
-      'UniqueName': 'uName',
-      'Type': 'Numeric',
-      'Index': 0,
-      'Level': 0
-    };
-    Element element = Element.fromJson('account1', 'account1', testMap);
+    Element element = await ElementService().getElement(
+        'account1', 'account1', 'Gross Margin');
     var printout = await ElementService()
         .getMembersUnderConsolidation(element, maxDepth: 3);
     List<String> actualResult = printout.keys.toList();
@@ -79,7 +57,8 @@ void main() async {
       'Index': 0,
       'Level': 0
     };
-    Element element = Element.fromJson('account1', 'account1', testMap);
+    Element element = await ElementService().getElement(
+        'account1', 'account1', 'Gross Margin');
     var printout = await ElementService()
         .getMembersUnderConsolidation(element, maxDepth: 3, leavesOnly: true);
     List<String> actualResult = printout.keys.toList();

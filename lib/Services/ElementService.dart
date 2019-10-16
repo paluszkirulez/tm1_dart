@@ -1,10 +1,7 @@
-import 'package:tm1_dart/Objects/Element.dart';
-import 'package:tm1_dart/Objects/Hierarchy.dart';
-import 'package:tm1_dart/Objects/TM1Object.dart';
-import 'package:tm1_dart/Services/ObjectService.dart';
-import 'package:tm1_dart/Services/RESTConnection.dart';
 import 'dart:convert';
 
+import 'package:tm1_dart/Objects/Element.dart';
+import 'package:tm1_dart/Services/ObjectService.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
 
 class ElementService extends ObjectService {
@@ -17,14 +14,17 @@ class ElementService extends ObjectService {
     var bodyReturned = await restConnection.runGet(
         'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Elements(\'$elementName\')');
     var decodedJson =  jsonDecode(await transformJson(bodyReturned));
-    //Map<String, dynamic> tempList = new Map<String, dynamic>.from(decodedJson);
-    //print(tempList);
+
+
+    Map<String, dynamic> tempList = {};
+    tempList.addAll(decodedJson);
+    tempList.addAll(
+        {'dimensionName': dimensionName, 'hierarchyName': hierarchyName});
+
     Element element =
-    Element.fromJson(dimensionName, hierarchyName, decodedJson,
-        withAttributes: withAttributes);
+    Element.fromJson(tempList);
     return element;
   }
-
 
 
   Future<Map<String, dynamic>> getMembersUnderConsolidation(Element element,
@@ -46,7 +46,7 @@ class ElementService extends ObjectService {
         expandString.substring(0, expandString.length - 1) + ')' * maxDepth;
     parametersMap.addAll({'\$expand': expandString});
     var bodyReturned =
-        await restConnection.runGet(request, parameters: parametersMap);
+    await restConnection.runGet(request, parameters: parametersMap);
     Map<String, dynamic> decodedJson = jsonDecode(await transformJson(bodyReturned));
     Map<String, dynamic> listOfElement = {};
     void getMembers(Map<String, dynamic> decodedJson) {

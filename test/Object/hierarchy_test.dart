@@ -3,6 +3,7 @@ import 'package:mockito/mockito.dart';
 import 'package:random_string/random_string.dart' as random;
 import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Hierarchy.dart';
+import 'package:tm1_dart/Objects/Subset.dart';
 import 'package:tm1_dart/Services/HierarchyService.dart';
 import 'package:tm1_dart/Services/RESTConnection.dart';
 
@@ -21,7 +22,8 @@ void main() async {
   RESTConnection restConnection = RESTConnection.initialize(
       "https", ip, 8010, "admin", "apple", true, "", false, false);
   Map<String, dynamic> testMap = {'Name': 'actvsbud'};
-  Hierarchy hierarchy = Hierarchy.fromJson('actvsbud', testMap);
+  String hierarchyName = 'actvsbud';
+  String dimensionName = 'actvsbud';
 
   test('check if correct elements of hierarchy are returned', () async {
     List<String> expectedElements = [
@@ -31,7 +33,7 @@ void main() async {
     ];
 
     Map<String, Element> mapOfElements = await HierarchyService().getElements(
-        hierarchy);
+        dimensionName, hierarchyName);
     List<String> printout = mapOfElements.keys.toList();
     expect(printout, expectedElements);
   });
@@ -46,14 +48,19 @@ void main() async {
       '実数と予算': 'Alias',
       'datenart': 'Alias'
     };
-    var printout = await HierarchyService().getAttributes(hierarchy);
+    var printout = await HierarchyService().getAttributes(
+        dimensionName, hierarchyName);
     expect(printout, expectedElements);
   });
   String name = random.randomString(5, from: 97, to: 122);
-  Map<String, dynamic> testMap2 = {'Name': name};
-  Hierarchy hierarchy2 = Hierarchy.fromJson('actvsbud', testMap2);
+  String dimensionName2 = 'actvsbud';
+  String hierarchyName2 = 'actvsbud';
+  Hierarchy hierarchy2 = Hierarchy.fromJson(
+      {'dimensionName': dimensionName2, 'Name': name});
+
   test('check if hierarchy creation works', () async {
     var printout = await HierarchyService().create(hierarchy2);
+    print(name);
     expect(printout, true);
   });
   test('check if hierarchy deletion works', () async {
@@ -63,22 +70,28 @@ void main() async {
 
   test('check if getHierarchy works', () async {
     Hierarchy hierarchyNew = await HierarchyService().getHierarchy('actvsbud', 'actvsbud');
-    expect(hierarchy.name,hierarchyNew.name);
+    expect('actvsbud', hierarchyNew.name);
   });
   test('check if get defautl member works', () async {
-    String actualResult = await HierarchyService().getDefaultMember(hierarchy);
+    String actualResult = await HierarchyService().getDefaultMember(
+        dimensionName, hierarchyName);
     expect(actualResult,'Actual');
   });
   test('get all subsets for a given hierarchy', () async {
-    List<String> actualResult = await HierarchyService().getSubsets(hierarchy);
-    expect(actualResult, ['All Members', 'test_alias', 'test_subset_public']);
+    List<Subset> actualResult = await HierarchyService().getSubsets(
+        dimensionName, hierarchyName);
+
+    List<String> actualName = actualResult.map((a) => a.name).toList();
+    expect(actualName, ['All Members', 'test_alias', 'test_subset_public']);
   });
   test('get number of elements', () async {
-    var actualResult = await HierarchyService().getNumberOfElements(hierarchy);
+    var actualResult = await HierarchyService().getNumberOfElements(
+        dimensionName, hierarchyName);
     expect(actualResult, 3);
   });
   test('get number of subsets', () async {
-    var actualResult = await HierarchyService().getNumberOfSubsets(hierarchy);
+    var actualResult = await HierarchyService().getNumberOfSubsets(
+        dimensionName, hierarchyName);
     expect(actualResult, 3);
   });
 
@@ -87,15 +100,15 @@ void main() async {
     String trueElement = 'Actual';
     String falseElement = 'asadadda';
     bool trueBool = await HierarchyService().checkIfContainsElement(
-        hierarchy, trueElement);
+        dimensionName, hierarchyName, trueElement);
     bool falseBool = await HierarchyService().checkIfContainsElement(
-        hierarchy, falseElement);
+        dimensionName, hierarchyName, falseElement);
     expect(trueBool, true);
     expect(falseBool, false);
   });
   test('check if correct edges are returned', () async {
     List<Map<String, dynamic>> listOfMaps = await HierarchyService().getEdges(
-        hierarchy);
+        dimensionName, hierarchyName);
     expect(listOfMaps.length, 2);
   });
 

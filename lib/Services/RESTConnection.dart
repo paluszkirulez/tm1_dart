@@ -157,4 +157,25 @@ class RESTConnection {
 
     return response;
   }
+
+  Future<HttpClientResponse> runUpdate(String baseURL,
+      Map<String, dynamic> parameters, String body) async {
+    HttpClient client = new HttpClient();
+    client.badCertificateCallback =
+        (X509Certificate cert, String host, int port) {
+      return true;
+    };
+    Uri tempUrl = url.replace(path: baseURL);
+    if (parameters != null && parameters.isNotEmpty) {
+      tempUrl = _replaceUnwantedStrings(tempUrl, parameters, baseURL);
+    }
+
+    var request = await client.patchUrl(tempUrl);
+    _addHeaders(request);
+    request.headers.contentLength = body.length;
+    request.write(body);
+    var response = await request.close();
+
+    return response;
+  }
 }

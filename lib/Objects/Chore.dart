@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 import 'package:tm1_dart/Objects/TM1Object.dart';
 
@@ -17,12 +19,17 @@ class Chore extends TM1Object {
 
   Map<String, dynamic> toJson() => _$ChoreToJson(this);
 
-  @override
-  String body() {
-    // TODO: implement body
-    return null;
-  }
 
   Chore(this.name, this.startTime, this.DSTSensitive, this.active,
       this.executionMode, this.frequency, this.tasks);
+
+  @override
+  String body() {
+    return json.encode(toJson());
+  }
+
+  @override
+  String createTM1Path() {
+    return 'api/v1/Chores';
+  }
 }

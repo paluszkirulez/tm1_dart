@@ -1,24 +1,40 @@
-import 'package:tm1_dart/Objects/Element.dart';
-import 'package:tm1_dart/Objects/Subset.dart';
 import 'dart:convert';
 
+import 'package:json_annotation/json_annotation.dart';
+import 'package:tm1_dart/Objects/Element.dart';
+import 'package:tm1_dart/Objects/Subset.dart';
+
+part 'UnregSubset.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class UnregSubset extends Subset{
-  final String name = '';
-  final String aliasApplied = '';
+  final String name;
+  final String uniqueName;
+  final String alias;
   final String dimensionName;
   final String hierarchyName;
-  List<Element> elements=[];
+  Map<String, Element> elements = {};
   bool isDynamic = false;
-  String MDX = '';
-  UnregSubset(this.dimensionName,this.hierarchyName,{this.elements,this.MDX,this.isDynamic}):
-    super(dimensionName,hierarchyName);
+  String expression = '';
+  Map<String, dynamic> attributes;
 
-  factory UnregSubset.fromJson(String dimensionName, String hierarchyName,Map<String,dynamic> parsedJson){
-    return new UnregSubset(dimensionName, hierarchyName,MDX: parsedJson['Expression'],
-        isDynamic: parsedJson['Expression'] != '[$dimensionName].MEMBERS'
-            ? parsedJson['Expression'] != '' ? true : false
-            : false);
-  }
+  UnregSubset(this.name, this.uniqueName, this.dimensionName,
+      this.hierarchyName, this.alias, this.elements, this.expression,
+      this.isDynamic, this.attributes) :
+        super(
+          name,
+          uniqueName,
+          dimensionName,
+          hierarchyName,
+          alias,
+          elements,
+          expression,
+          attributes);
+
+  factory UnregSubset.fromJson(Map<String, dynamic> json) =>
+      _$UnregSubsetFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UnregSubsetToJson(this);
 
   @override
   String createTM1Path() {
@@ -33,8 +49,6 @@ class UnregSubset extends Subset{
     bodyMap.addAll(createExpressionOrListOfElement());
     return json.encode(bodyMap);
   }
-
-
 
 
 }

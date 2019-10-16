@@ -1,38 +1,43 @@
-import 'TM1Object.dart';
-import 'Element.dart';
 import 'dart:convert';
 
+import 'package:json_annotation/json_annotation.dart';
+
+import 'Element.dart';
+import 'TM1Object.dart';
+
+part 'Subset.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class Subset extends TM1Object {
   final String classType = 'Subset';
+  @JsonKey(name: 'Name')
   final String name;
+  @JsonKey(name: 'UniqueName')
+  final String uniqueName;
+  @JsonKey(name: 'dimensionName')
   final String dimensionName;
+  @JsonKey(name: 'hierarchyName')
   final String hierarchyName;
   bool private;
-  String aliasApplied;
-  List<Element> elements = [];
+  @JsonKey(name: 'Alias')
+  String alias;
+  @JsonKey(name: 'Elements')
+  Map<String, Element> elements = {};
   bool isDynamic = false;
-  String MDX = '';
+  @JsonKey(name: 'Expression')
+  String expression = '';
+  @JsonKey(name: 'Attributes')
+  Map<String, dynamic> attributes = {};
+
+
+  Subset(this.name, this.uniqueName, this.dimensionName, this.hierarchyName,
+      this.alias, this.elements, this.expression,
+      this.attributes);
 
   //TODO add prvatesubsets by adding boolean and using 'PrivateSubsets' in baseurl
-  Subset(this.dimensionName, this.hierarchyName,
-      {this.name,
-        this.aliasApplied,
-        this.elements,
-        this.isDynamic = false,
-        this.MDX,
-        this.private = false});
+  factory Subset.fromJson(Map<String, dynamic> json) => _$SubsetFromJson(json);
 
-  factory Subset.fromJson(String dimensionName, String hierarchyName,
-      Map<String, dynamic> parsedJson) {
-    return new Subset(dimensionName, hierarchyName,
-        name: parsedJson['Name'],
-        MDX: parsedJson['Expression'],
-        aliasApplied: parsedJson['Alias'],
-        private: parsedJson['Private'],
-        isDynamic: parsedJson['Expression'] != '[$dimensionName].MEMBERS'
-            ? parsedJson['Expression'] != null ? true : false
-            : false);
-  }
+  Map<String, dynamic> toJson() => _$SubsetToJson(this);
 
   @override
   String createTM1Path() {
@@ -43,7 +48,7 @@ class Subset extends TM1Object {
   String body() {
     Map<String, dynamic> bodyMap = {};
     bodyMap.addAll({'Name': name});
-    aliasApplied != '' ? bodyMap.addAll({'Alias': aliasApplied}) : {};
+    alias != '' ? bodyMap.addAll({'Alias': alias}) : {};
     bodyMap.addAll({
       'Hierarchy@odata.bind':
       'Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')'
@@ -55,14 +60,14 @@ class Subset extends TM1Object {
   Map<String, dynamic> createExpressionOrListOfElement() {
     Map<String, dynamic> bodyMap = {};
     if (isDynamic) {
-      bodyMap.addAll({'Expression': MDX});
+      bodyMap.addAll({'Expression': expression});
     } else {
       var statement =
           'Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Elements';
       //var listOfElements='[';
       var listOfElements = [];
       var fullElementName = '';
-      for (Element element in elements) {
+      for (Element element in elements.values) {
         fullElementName = statement + '(\'${element.name}\')';
         listOfElements.add(fullElementName);
       }

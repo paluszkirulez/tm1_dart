@@ -1,12 +1,11 @@
 import 'package:tm1_dart/Objects/Axis/ViewAxisSelection.dart';
 import 'package:tm1_dart/Objects/Axis/ViewTitleSelection.dart';
-import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Subset.dart';
 import 'package:tm1_dart/Objects/UnregSubset.dart';
 import 'package:tm1_dart/Objects/View/View.dart';
 
 class NativeView extends View {
-  /// this is the abstracion of natve view
+  /// this is the abstracion of native view
 
   final String name;
   final String cubeName;
@@ -24,7 +23,7 @@ class NativeView extends View {
       this.format,
       this.rows,
       this.titles,
-      this.columns);
+      this.columns) :super(name, cubeName);
 
   String prepareMDXQueryView() {
     List<List<ViewAxisSelection>> axisList = [columns, rows];
@@ -36,9 +35,9 @@ class NativeView extends View {
       for (ViewAxisSelection axe in axis) {
         Subset subset = axe.subset;
         if (subset.runtimeType == UnregSubset) {
-          if (subset.MDX != '') {
+          if (subset.expression != '') {
             mdx.write('{');
-            mdx.write(subset.MDX + '} ');
+            mdx.write(subset.expression + '} ');
           } else {
             StringBuffer uniqNames = StringBuffer('');
             for (int i = 0; i < subset.elements.length; i++) {

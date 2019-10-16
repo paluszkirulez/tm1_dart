@@ -2,9 +2,10 @@ import 'dart:convert';
 
 import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Hierarchy.dart';
-import 'package:tm1_dart/Objects/TM1Object.dart';
+import 'package:tm1_dart/Objects/Subset.dart';
 import 'package:tm1_dart/Services/ElementService.dart';
 import 'package:tm1_dart/Services/ObjectService.dart';
+import 'package:tm1_dart/Services/SubsetService.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
 
 class HierarchyService extends ObjectService {
@@ -16,21 +17,26 @@ class HierarchyService extends ObjectService {
         'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')');
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
 
+    Map<String, dynamic> objectMap = {};
+    objectMap.addAll(decodedJson);
+    objectMap.addAll(
+        {'Elements': await getElements(dimensionName, hierarchyName)});
+    objectMap.addAll(
+        {'Subsets': await getSubsets(dimensionName, hierarchyName)});
+    objectMap.addAll({'Edges': await getEdges(dimensionName, hierarchyName)});
+    Hierarchy hierarchy = Hierarchy.fromJson(objectMap);
 
-    Hierarchy hierarchy = Hierarchy.fromJson(dimensionName, decodedJson);
-
-    hierarchy.elements = await getElements(hierarchy);
     return hierarchy;
   }
 
-  Future<Map<String, Element>> getElements(TM1Object hierarchy,
-      {getControl}) async {
+  Future<Map<String, Element>> getElements(String dimensionName,
+      String hierarchyName, {getControl}) async {
     //returns all elements as list
     Map<String, dynamic> parametersMap = {};
     parametersMap.addAll({'\$select': 'Name,Type'});
-    Hierarchy hierarchyFromObject = hierarchy as Hierarchy;
+
     var bodyReturned = await restConnection.runGet(
-        'api/v1/Dimensions(\'${hierarchyFromObject.dimension}\')/Hierarchies(\'${hierarchyFromObject.name}\')/Elements',
+        'api/v1/Dimensions(\'${dimensionName}\')/Hierarchies(\'${hierarchyName}\')/Elements',
         parameters: parametersMap);
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
     List<dynamic> listOfStrings = decodedJson['value'];
@@ -39,25 +45,25 @@ class HierarchyService extends ObjectService {
       Map<String, dynamic> pair = i;
       String name = pair['Name'];
       Element nameElement = await ElementService().getElement(
-          hierarchyFromObject.dimension, hierarchyFromObject.name, name);
+          dimensionName, hierarchyName, name);
       objectsMap.addAll({name: nameElement});
     }
 
     return objectsMap;
   }
 
-  Future<int> getNumberOfElements(TM1Object hierarchy, {getControl}) async {
+  Future<int> getNumberOfElements(String dimensionName, String hierarchyName,
+      {getControl}) async {
     Map<String, Element> namesList = await getElements(
-        hierarchy, getControl: getControl);
+        dimensionName, hierarchyName, getControl: getControl);
     return namesList.length;
   }
 
 
-
-
-  Future<Map<String, dynamic>> getAttributes(Hierarchy hierarchy) async {
+  Future<Map<String, dynamic>> getAttributes(String dimensionName,
+      String hierarchyName) async {
     var bodyReturned = await restConnection.runGet(
-        'api/v1/Dimensions(\'${hierarchy.dimension}\')/Hierarchies(\'${hierarchy.name}\')/ElementAttributes');
+        'api/v1/Dimensions(\'${dimensionName}\')/Hierarchies(\'${hierarchyName}\')/ElementAttributes');
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
     List<dynamic> objectsMap = decodedJson['value'];
     List<String> namesList = objectsMap
@@ -73,53 +79,58 @@ class HierarchyService extends ObjectService {
     return nameTypeMap;
   }
 
-  Future<String> getDefaultMember(Hierarchy hierarchy) async {
-    var baseURL = 'api/v1/Dimensions(\'${hierarchy.dimension}\')/Hierarchies(\'${hierarchy.name}\')/DefaultMember/Name/\$value';
+  Future<String> getDefaultMember(String dimensionName,
+      String hierarchyName) async {
+    var baseURL = 'api/v1/Dimensions(\'${dimensionName}\')/Hierarchies(\'${hierarchyName}\')/DefaultMember/Name/\$value';
     var bodyReturned = await restConnection.runGet(baseURL);
     String decodedJson = await transformJson(bodyReturned);
     return decodedJson;
   }
 
-  Future<List<String>> getSubsets(TM1Object hierarchy, {getControl}) async {
+  Future<List<Subset>> getSubsets(String dimensionName, String hierarchyName,
+      {getControl}) async {
     //returns all elements as list
     Map<String, dynamic> parametersMap = {};
     parametersMap.addAll({'\$select': 'Name'});
-    Hierarchy hierarchyFromObject = hierarchy as Hierarchy;
+
     var bodyReturned = await restConnection.runGet(
-        'api/v1/Dimensions(\'${hierarchyFromObject
-            .dimension}\')/Hierarchies(\'${hierarchyFromObject
-            .name}\')/Subsets',
+        'api/v1/Dimensions(\'${dimensionName}\')/Hierarchies(\'${hierarchyName}\')/Subsets',
         parameters: parametersMap);
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
-    List<dynamic> objectsMap = decodedJson['value'];
-    var namesList = objectsMap
-        .map((name) =>
-        name.toString().substring(7, name
-            .toString()
-            .length - 1))
-        .toList();
+    List<dynamic> listOfStrings = decodedJson['value'];
+    List<Subset> objectsMap = [];
+    for (var i in listOfStrings) {
+      Map<String, dynamic> pair = i;
+      String name = pair['Name'];
+      Subset subset = await SubsetService().getSubset(
+          dimensionName, hierarchyName, name);
+      objectsMap.add(subset);
+    }
 
-    return namesList;
+    return objectsMap;
   }
 
-  Future<int> getNumberOfSubsets(TM1Object hierarchy, {getControl}) async {
-    List<String> namesList = await getSubsets(
-        hierarchy, getControl: getControl);
+  Future<int> getNumberOfSubsets(String dimensionName, String hierarchyName,
+      {getControl}) async {
+    List<Subset> namesList = await getSubsets(
+        dimensionName, hierarchyName, getControl: getControl);
     return namesList.length;
   }
-  Future<bool> checkIfContainsElement(Hierarchy hierarchy,
+
+  Future<bool> checkIfContainsElement(String dimensionName,
+      String hierarchyName,
       String element) async {
-    Map<String, Element> allElements = await getElements(hierarchy);
+    Map<String, Element> allElements = await getElements(
+        dimensionName, hierarchyName);
     bool result = allElements.keys.contains(element);
     return result;
   }
 
-  Future<List<Map<String, dynamic>>> getEdges(TM1Object hierarchy) async {
-    Hierarchy hierarchyFromObject = hierarchy as Hierarchy;
+  Future<List<Map<String, dynamic>>> getEdges(String dimensionName,
+      String hierarchyName) async {
+
     var bodyReturned = await restConnection.runGet(
-        'api/v1/Dimensions(\'${hierarchyFromObject
-            .dimension}\')/Hierarchies(\'${hierarchyFromObject
-            .name}\')/Edges');
+        'api/v1/Dimensions(\'${dimensionName}\')/Hierarchies(\'${hierarchyName}\')/Edges');
 
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
 

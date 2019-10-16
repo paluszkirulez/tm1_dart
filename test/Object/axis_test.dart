@@ -1,13 +1,14 @@
 //TODO tests for axis
 
-import 'package:tm1_dart/Objects/Element.dart';
-import 'package:tm1_dart/Objects/Subset.dart';
-import 'package:tm1_dart/Objects/UnregSubset.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tm1_dart/Objects/Axis/ViewAxisSelection.dart';
 import 'package:tm1_dart/Objects/Axis/ViewTitleSelection.dart';
+import 'package:tm1_dart/Objects/Element.dart';
+import 'package:tm1_dart/Objects/Subset.dart';
+import 'package:tm1_dart/Objects/UnregSubset.dart';
+import 'package:tm1_dart/Services/SubsetService.dart';
 
-void main() {
+void main() async {
   //String ipAddress = await GetIp.ipAddress;
   /* String ipAddress = '10.113.171.159';
   RESTConnection restConnection = RESTConnection.initialize(
@@ -36,8 +37,8 @@ void main() {
     //"Expression":"[some kind of expression]",
     "Alias": ""
   };
-  Subset testingSubsetWithElements =
-  Subset.fromJson(dimName, hierName, testAxisOfElements);
+  Subset testingSubsetWithElements = await SubsetService().getSubset(
+      dimName, hierName, testAxisOfElements['Name']);
   testingSubsetWithElements.elements = [element];
 
   Subset testingSubset = Subset.fromJson(dimName, hierName, testMap);
@@ -63,7 +64,7 @@ void main() {
     ViewAxisSelection(unregSubset, dimName, hierName);
     var actualString =
         '{"Subset":{"Hierarchy@odata.bind":"Dimensions(\'$dimName\')/Hierarchies(\'$hierName\')","Expression":"${unregSubset
-        .MDX}"}}';
+        .expression}"}}';
     expect(testSelection.body(), actualString);
   });
   //TODO check how elements based subset should be created and what is the output

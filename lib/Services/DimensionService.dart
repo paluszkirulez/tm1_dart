@@ -15,19 +15,22 @@ class DimensionService extends ObjectService{
     var bodyReturned = await restConnection.runGet(
         'api/v1/Dimensions(\'$dimensionName\')');
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
+    Map<String, dynamic> objectMap = {};
+    objectMap.addAll(decodedJson);
+    objectMap.addAll({'Hierarchies': await getHierarchies(dimensionName)});
     Dimension dimension = Dimension.fromJson(decodedJson);
-    dimension.hierarchies = await getHierarchies(dimension);
+
     return dimension;
   }
 
-  Future<List<Hierarchy>> getHierarchies(TM1Object dimension,
+  Future<List<Hierarchy>> getHierarchies(String dimensionName,
       {getControl}) async {
     //return list of hierarchies
     Map<String, dynamic> parametersMap = {};
     parametersMap.addAll({'\$select': 'Name'});
-    Dimension dimensionFromObject = dimension as Dimension;
+
     var bodyReturned = await restConnection.runGet(
-        'api/v1/Dimensions(\'${dimensionFromObject.name}\')/Hierarchies',
+        'api/v1/Dimensions(\'${dimensionName}\')/Hierarchies',
         parameters: parametersMap);
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
     List<dynamic> listOfStrings = decodedJson['value'];
@@ -36,7 +39,7 @@ class DimensionService extends ObjectService{
       Map<String, dynamic> pair = i;
       String name = pair['Name'];
       Hierarchy nameHierarchy = await HierarchyService().getHierarchy(
-          dimensionFromObject.name, name);
+          dimensionName, name);
       objectsMap.add(nameHierarchy);
     }
 
