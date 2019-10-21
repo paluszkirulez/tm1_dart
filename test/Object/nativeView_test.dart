@@ -5,6 +5,7 @@ import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Subset.dart';
 import 'package:tm1_dart/Objects/UnregSubset.dart';
 import 'package:tm1_dart/Objects/View/NativeView.dart';
+import 'package:tm1_dart/Services/ElementService.dart';
 import 'package:tm1_dart/Services/RESTConnection.dart';
 
 import '../UtilsForTest/ConnectionUtils.dart';
@@ -17,41 +18,55 @@ void main() async {
   RESTConnection restConnection = RESTConnection.initialize(
       "https", ip, 8010, "admin", "apple", true, "", false, false);
   String cubeName = 'PNLCube';
-  Map<String, dynamic> testMapElement1 = {
-    'Name': 'Jan',
-    'UniqueName': 'Jan',
-    'Type': 'Numeric',
-    'Index': 0,
-    'Level': 0
-  };
-  Map<String, dynamic> testMapElement2 = {
-    'Name': 'Feb',
-    'UniqueName': 'Feb',
-    'Type': 'Numeric',
-    'Index': 0,
-    'Level': 0
-  };
-  Map<String, dynamic> testMapElement3 = {
-    'Name': 'Mar',
-    'UniqueName': 'Mar',
-    'Type': 'Numeric',
-    'Index': 0,
-    'Level': 0
-  };
-  Element element1 = Element.fromJson('month', 'month', testMapElement1);
-  Element element2 = Element.fromJson('month', 'month', testMapElement2);
-  Element element3 = Element.fromJson('month', 'month', testMapElement3);
+  String dimName = 'month';
+  String hierName = 'month';
+  String el1 = 'Jan';
+  String el2 = 'Feb';
+  String el3 = 'Mar';
+
+  Element element1 = await ElementService().getElement(dimName, hierName, el1);
+  Element element2 = await ElementService().getElement(dimName, hierName, el2);
+  Element element3 = await ElementService().getElement(dimName, hierName, el3);
   var monthJson = {'Expression': ''};
-  UnregSubset subsetMonth1 = UnregSubset.fromJson('month', 'month',
-      monthJson);
-  subsetMonth1.elements = [element1, element2, element3];
-  var accountJson = {'Expression': '[account2].[bdg]'};
+  Map<String, dynamic> unregMap = {
+    'Name': 'testName',
+    'dimensionName': dimName,
+    'hierarchyName': hierName,
+    'Elements': {
+      element1.name: element1,
+      element2.name: element2,
+      element3.name: element3
+    }
+  };
+  unregMap.addAll(monthJson);
+  UnregSubset subsetMonth1 = UnregSubset.fromJson(unregMap);
+
+  var accountJson = {
+    'Name': 'testName',
+    'dimensionName': 'account2',
+    'hierarchyName': 'account2',
+    'Expression': '[account2].[bdg]'
+  };
   UnregSubset subsetAccount2 =
-  UnregSubset.fromJson('account2', 'account2', accountJson);
-  Subset subsetTitle1 = Subset.fromJson('actvsbud', 'actvsbud',
-      {'Expression': '[actvsbud].Actual', 'Name': 'All Members', 'Alias': ''});
-  Subset subsetTitle2 = Subset.fromJson('region', 'region',
-      {'Expression': '[region].World', 'Name': 'Europe', 'Alias': ''});
+  UnregSubset.fromJson(accountJson);
+  Subset subsetTitle1 = Subset.fromJson(
+      {
+        'Name': 'testName',
+        'dimensionName': 'actvsbud',
+        'hierarchyName': 'actvsbud',
+        'Expression': '[actvsbud].Actual',
+        'Name': 'All Members',
+        'Alias': ''
+      });
+  Subset subsetTitle2 = Subset.fromJson(
+      {
+        'Name': 'testName',
+        'dimensionName': 'region',
+        'hierarchyName': 'region',
+        'Expression': '[region].World',
+        'Name': 'Europe',
+        'Alias': ''
+      });
   ViewTitleSelection viewTitleSelection1 =
       ViewTitleSelection(subsetTitle1, 'actvsbud', 'actvsbud', 'Actual');
   ViewTitleSelection viewTitleSelection2 =

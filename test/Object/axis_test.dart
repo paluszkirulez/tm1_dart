@@ -5,16 +5,26 @@ import 'package:tm1_dart/Objects/Axis/ViewAxisSelection.dart';
 import 'package:tm1_dart/Objects/Axis/ViewTitleSelection.dart';
 import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Subset.dart';
-import 'package:tm1_dart/Objects/UnregSubset.dart';
+import 'package:tm1_dart/Services/ElementService.dart';
+import 'package:tm1_dart/Services/RESTConnection.dart';
 import 'package:tm1_dart/Services/SubsetService.dart';
 
+import '../UtilsForTest/ConnectionUtils.dart';
+
 void main() async {
-  //String ipAddress = await GetIp.ipAddress;
-  /* String ipAddress = '10.113.171.159';
+  String ip = await getIp();
   RESTConnection restConnection = RESTConnection.initialize(
-      "https", ipAddress, 8010, "admin", "apple", true, "", false, false);*/
-  String dimName = 'actvsbud';
-  String hierName = 'actvsbud';
+      "https",
+      ip,
+      8010,
+      "admin",
+      "apple",
+      true,
+      "",
+      false,
+      false);
+  String dimName = 'account1';
+  String hierName = 'account1';
   Map<String, dynamic> testMap = {
     "Name": "All Members",
     "UniqueName": "[$dimName].[All Members]",
@@ -29,44 +39,40 @@ void main() async {
     'Index': 0,
     'Level': 0
   };
-  Element element = Element.fromJson('account', 'account', testMapElement);
-  Map<String, dynamic> testAxisOfElements = {
-    "Name": "All Members",
-    "UniqueName": "[$dimName].[All Members]",
-    "Expression": "[$dimName].MEMBERS",
-    //"Expression":"[some kind of expression]",
-    "Alias": ""
-  };
+  String elementName = 'Price';
+  Element element = await ElementService().getElement(
+      hierName, dimName, elementName);
+  String staticSubsetName = 'Default';
   Subset testingSubsetWithElements = await SubsetService().getSubset(
-      dimName, hierName, testAxisOfElements['Name']);
-  testingSubsetWithElements.elements = [element];
+      dimName, hierName, staticSubsetName);
 
-  Subset testingSubset = Subset.fromJson(dimName, hierName, testMap);
-  UnregSubset unregSubset = UnregSubset.fromJson(dimName, hierName, testMap);
+
 
   test('check if subset named axes is correctly created', () async {
     ViewAxisSelection testSelection =
-        ViewAxisSelection(testingSubset, dimName, hierName);
+    ViewAxisSelection(testingSubsetWithElements, dimName, hierName);
     var actualString =
-        '{"Subset@odata.bind":"Dimensions(\'$dimName\')/Hierarchies(\'$hierName\')/Subsets(\'${testingSubset.name}\')"}';
+        '{"Subset@odata.bind":"Dimensions(\'$dimName\')/Hierarchies(\'$hierName\')/Subsets(\'${testingSubsetWithElements
+        .name}\')"}';
     expect(testSelection.body(), actualString);
   });
   test('check if named subset with select is correctly created', () async {
     ViewTitleSelection testSelection =
-    ViewTitleSelection(testingSubset, dimName, hierName, 'Actual');
+    ViewTitleSelection(testingSubsetWithElements, dimName, hierName, 'Actual');
     var actualString =
-        '{"Subset@odata.bind":"Dimensions(\'$dimName\')/Hierarchies(\'$hierName\')/Subsets(\'${testingSubset.name}\')",'
+        '{"Subset@odata.bind":"Dimensions(\'$dimName\')/Hierarchies(\'$hierName\')/Subsets(\'${testingSubsetWithElements
+        .name}\')",'
         '"Selected@odata.bind":"Dimensions(\'$dimName\')/Hierarchies(\'$hierName\')/Elements(\'Actual\')"}';
     expect(testSelection.body(), actualString);
   });
-  test('check if axis without subset is correctly created', () async {
+  /*test('check if axis without subset is correctly created', () async {
     ViewAxisSelection testSelection =
     ViewAxisSelection(unregSubset, dimName, hierName);
     var actualString =
         '{"Subset":{"Hierarchy@odata.bind":"Dimensions(\'$dimName\')/Hierarchies(\'$hierName\')","Expression":"${unregSubset
         .expression}"}}';
     expect(testSelection.body(), actualString);
-  });
+  });*/
   //TODO check how elements based subset should be created and what is the output
   test('check if axis with elements is correctly created', () async {
     ViewAxisSelection testSelection =
