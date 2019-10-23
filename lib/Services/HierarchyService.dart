@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Hierarchy.dart';
@@ -141,5 +142,38 @@ class HierarchyService extends ObjectService {
       objectsMap.add(pairs);
     }
     return objectsMap;
+  }
+
+  Future<bool> createEdges(String dimensionName, String hierarchyName,
+      String parentName, String componentName, int weight) async {
+    String connectionString = 'api/v1/Dimensions(\'${dimensionName}\')/Hierarchies(\'${hierarchyName}\')/Edges';
+
+    String body = json.encode({
+      'ParentName': parentName,
+      'ComponentName': componentName,
+      'Weight': weight
+    });
+
+    HttpClientResponse bodyReturned = await restConnection.runPost(
+        connectionString, {}, body);
+    bool created = false;
+    if (bodyReturned.statusCode == 201) {
+      created = true;
+    }
+    return created;
+  }
+
+  Future<bool> deleteAllEdges(String dimensionName,
+      String hierarchyName) async {
+    String connectionString = 'api/v1/Dimensions(\'${dimensionName}\')/Hierarchies(\'${hierarchyName}\')';
+
+    String body = json.encode({"Edges": []});
+    HttpClientResponse bodyReturned = await restConnection.runUpdate(
+        connectionString, {}, body);
+    bool deleted = false;
+    if (bodyReturned.statusCode == 201) {
+      deleted = true;
+    }
+    return deleted;
   }
 }

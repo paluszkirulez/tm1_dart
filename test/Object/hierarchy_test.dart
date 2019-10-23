@@ -28,6 +28,7 @@ void main() async {
   test('check if correct elements of hierarchy are returned', () async {
     List<String> expectedElements = [
       'Actual',
+      'Actual2',
       'Budget',
       'Variance'
     ];
@@ -72,7 +73,7 @@ void main() async {
     Hierarchy hierarchyNew = await HierarchyService().getHierarchy('actvsbud', 'actvsbud');
     expect('actvsbud', hierarchyNew.name);
   });
-  test('check if get defautl member works', () async {
+  test('check if get default member works', () async {
     String actualResult = await HierarchyService().getDefaultMember(
         dimensionName, hierarchyName);
     expect(actualResult,'Actual');
@@ -87,7 +88,7 @@ void main() async {
   test('get number of elements', () async {
     var actualResult = await HierarchyService().getNumberOfElements(
         dimensionName, hierarchyName);
-    expect(actualResult, 3);
+    expect(actualResult, 4);
   });
   test('get number of subsets', () async {
     var actualResult = await HierarchyService().getNumberOfSubsets(
@@ -106,10 +107,21 @@ void main() async {
     expect(trueBool, true);
     expect(falseBool, false);
   });
+
+  test('check if deleting all edges works', () async {
+    bool result = await HierarchyService().deleteAllEdges(
+        dimensionName, hierarchyName);
+    expect(result, false);
+  });
+  test('check if adding edges works', () async {
+    bool result2 = await HierarchyService().createEdges(
+        dimensionName, hierarchyName, 'Variance', 'Actual2', 1);
+    expect(result2, true);
+  });
   test('check if correct edges are returned', () async {
     List<Map<String, dynamic>> listOfMaps = await HierarchyService().getEdges(
         dimensionName, hierarchyName);
-    expect(listOfMaps.length, 2);
+    expect(listOfMaps.length, 1);
   });
 
   //TODO add getter for hierarchy details
