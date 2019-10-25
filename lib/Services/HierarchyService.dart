@@ -184,7 +184,7 @@ class HierarchyService extends ObjectService {
     HttpClientResponse bodyReturned = await restConnection.runUpdate(
         connectionString, {}, body);
     bool changed = false;
-    if ((bodyReturned.statusCode >= 200) & (bodyReturned.statusCode < 300)) {
+    if ((bodyReturned.statusCode >= 200) & (bodyReturned.statusCode < 230)) {
       changed = true;
     }
     return changed;
