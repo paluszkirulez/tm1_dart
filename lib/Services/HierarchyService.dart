@@ -176,4 +176,18 @@ class HierarchyService extends ObjectService {
     }
     return deleted;
   }
+
+  Future<bool> updateVisibility(String dimensionName, String hierarchyName,
+      bool visible) async {
+    String connectionString = 'api/v1/Dimensions(\'${dimensionName}\')/Hierarchies(\'${hierarchyName}\')';
+    String body = json.encode({"Visible": visible});
+    HttpClientResponse bodyReturned = await restConnection.runUpdate(
+        connectionString, {}, body);
+    bool changed = false;
+    if ((bodyReturned.statusCode >= 200) & (bodyReturned.statusCode < 300)) {
+      changed = true;
+    }
+    return changed;
+  }
+
 }

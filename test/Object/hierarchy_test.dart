@@ -61,7 +61,7 @@ void main() async {
 
   test('check if hierarchy creation works', () async {
     var printout = await HierarchyService().create(hierarchy2);
-    print(name);
+
     expect(printout, true);
   });
   test('check if hierarchy deletion works', () async {
@@ -123,7 +123,11 @@ void main() async {
         dimensionName, hierarchyName);
     expect(listOfMaps.length, 1);
   });
-
+  test('check if visiility change works', () async {
+    bool changed = await HierarchyService().updateVisibility(
+        dimensionName, hierarchyName, false);
+    expect(changed, true);
+  });
   //TODO add getter for hierarchy details
   //TODO add post/update methods
 
