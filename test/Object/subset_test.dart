@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:random_string/random_string.dart' as random;
 import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Subset.dart';
 import 'package:tm1_dart/Services/RESTConnection.dart';
@@ -15,8 +16,8 @@ void main() async {
 
   String dimensionName = 'actvsbud';
   String hierarchyName = 'actvsbud';
-  String dynamicSubsetName = 'All Members';
-  String staticSubsetName = 'test_alias';
+  String staticSubsetName = 'Subset1';
+  String dynamicSubsetName = 'test_alias';
   Subset staticSubset = await SubsetService().getSubset(
       dimensionName, hierarchyName, staticSubsetName);
   Subset dynamicSubset = await SubsetService().getSubset(
@@ -36,7 +37,7 @@ void main() async {
     Map<String, Element> actualList = await SubsetService().getElements(
         dimensionName, hierarchyName, staticSubsetName);
     var actual = actualList.keys.toList();
-    expect(actual, ['Actual', 'Actual2', 'Budget', 'Variance']);
+    expect(actual, ['Actual2']);
   });
 
   test('get subset from resource', () async {
@@ -49,8 +50,14 @@ void main() async {
     expect(actualSubset.elements.keys.toList(), actual);
     //expect(actualSubset.elements.length, 0);
   });
+  String name = random.randomString(5, from: 97, to: 122);
 
+  Subset subset2 = staticSubset;
+  subset2.name = name;
 
   //TODO get subsets should work from dimension service
-
+  test('create static subset', () async {
+    bool created = await SubsetService().create(subset2);
+    expect(created, true);
+  });
 }

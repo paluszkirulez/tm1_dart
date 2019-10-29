@@ -24,11 +24,16 @@ class SubsetService extends ObjectService {
     Map<String, Element> mapOfElements =
     await getElements(dimensionName, hierarchyName, subsetName);
     objectMap.addAll({'Elements': mapOfElements});
-    if ((objectMap['expression'] == '') ||
-        (objectMap['expression'] == '[account1].MEMBERS')) {
-      objectMap.addAll({'isDynamic': false});
-    }
+    objectMap.addAll({'dimensionName': dimensionName});
+    objectMap.addAll({'hierarchyName': hierarchyName});
     Subset subset = Subset.fromJson(objectMap);
+    bool isDynamic = false;
+    if (![null, ''].contains(subset.expression)) {
+      isDynamic = true;
+    }
+
+
+    subset.isDynamic = isDynamic;
     return subset;
   }
 
@@ -56,4 +61,5 @@ class SubsetService extends ObjectService {
 
     return objectsMap;
   }
+
 }

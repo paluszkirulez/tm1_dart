@@ -7,24 +7,24 @@ import 'TM1Object.dart';
 
 part 'Subset.g.dart';
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
 class Subset extends TM1Object {
   final String classType = 'Subset';
   @JsonKey(name: 'Name')
-  final String name;
+  String name;
   @JsonKey(name: 'UniqueName')
   final String uniqueName;
   @JsonKey(name: 'dimensionName')
   final String dimensionName;
   @JsonKey(name: 'hierarchyName')
   final String hierarchyName;
-  bool private;
+  bool private = false;
   @JsonKey(name: 'Alias')
   String alias;
   @JsonKey(name: 'Elements')
   Map<String, Element> elements = {};
   bool isDynamic = false;
-  @JsonKey(name: 'Expression')
+  @JsonKey(name: 'Expression', defaultValue: '')
   String expression = '';
   @JsonKey(name: 'Attributes')
   Map<String, dynamic> attributes = {};
