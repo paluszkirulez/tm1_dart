@@ -62,4 +62,16 @@ class SubsetService extends ObjectService {
     return objectsMap;
   }
 
+  Future<bool> checkIfElementExists(String dimensionName,
+      String hierarchyName, String subsetName, String elementName,
+      {getControl = false}) async {
+    Map<String, Element> mapElements = await getElements(
+        dimensionName, hierarchyName, subsetName, getControl: getControl);
+    bool elementExists = false;
+    if (mapElements.containsKey(elementName)) {
+      elementExists = true;
+    }
+    return elementExists;
+  }
+
 }

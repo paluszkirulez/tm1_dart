@@ -11,7 +11,7 @@ abstract class ObjectService {
   Future<bool> create(TM1Object tm1object) async {
     var request = tm1object.createTM1Path();
     String body = tm1object.body();
-    print(body);
+
     if (!await checkIfExists(tm1object)) {
       await restConnection.runPost(request, {}, body);
       return true;
