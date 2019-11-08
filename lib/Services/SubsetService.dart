@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Subset.dart';
@@ -72,6 +73,36 @@ class SubsetService extends ObjectService {
       elementExists = true;
     }
     return elementExists;
+  }
+
+  Future<bool> deleteElementFromSubset(String dimensionName,
+      String hierarchyName, String subsetName, String elementName) async {
+    Map<String, Element> mapElements = await getElements(
+        dimensionName, hierarchyName, subsetName);
+    bool elementDeleted = false;
+    bool checkIfExist = await checkIfElementExists(
+        dimensionName, hierarchyName, subsetName, elementName);
+    if (!checkIfExist) {
+      return elementDeleted;
+    }
+    var url = 'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Subsets(\'$subsetName\')/Elements(\'$elementName\')';
+    HttpClientResponse response = await restConnection.runDelete(url);
+    if ((response.statusCode >= 200) & (response.statusCode <= 230)) {
+      elementDeleted = true;
+    }
+    return elementDeleted;
+  }
+
+  Future<bool> updateSubset(Subset subsetName) async {
+    bool returnedResult = false;
+    var body = subsetName.body();
+    String path = subsetName.createTM1Path() + '(\'${subsetName.name}\')';
+    HttpClientResponse response = await restConnection.runUpdate(
+        path, {}, body);
+    if ((response.statusCode >= 200) & (response.statusCode <= 230)) {
+      returnedResult = true;
+    }
+    return returnedResult;
   }
 
 }

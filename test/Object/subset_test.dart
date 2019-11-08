@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:random_string/random_string.dart' as random;
 import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Subset.dart';
+import 'package:tm1_dart/Services/ElementService.dart';
 import 'package:tm1_dart/Services/RESTConnection.dart';
 import 'package:tm1_dart/Services/SubsetService.dart';
 
@@ -34,7 +35,7 @@ void main() async {
     Map<String, Element> actualList = await SubsetService().getElements(
         dimensionName, hierarchyName, staticSubsetName);
     var actual = actualList.keys.toList();
-    expect(actual, ['Actual2']);
+    expect(actual, ['Actual2', 'Actual']);
   });
 
   test('get subset from resource', () async {
@@ -74,8 +75,34 @@ void main() async {
     bool created = await SubsetService().create(subset3);
     expect(created, true);
   });
+
+
   test('does the subset exist', () async {
     bool actualValue = await SubsetService().checkIfExists(dynamicSubset);
     expect(actualValue, true);
+  });
+
+  test('delete static subset', () async {
+    bool deleteResult = await SubsetService().delete(subset2);
+    bool actualValue = await SubsetService().checkIfExists(subset2);
+    expect(deleteResult, true);
+    expect(actualValue, false);
+  });
+  staticSubsetName = 'newSubset';
+  Subset newSubset = await SubsetService().getSubset(
+      dimensionName, hierarchyName, staticSubsetName);
+  Element newElement = await ElementService().getElement(
+      dimensionName, hierarchyName, 'Actual');
+  test('delete element from subset', () async {
+    bool returned = await SubsetService().deleteElementFromSubset(
+        dimensionName, hierarchyName, newSubset.name, 'Actual');
+    expect(returned, true);
+  });
+
+  test('update subset', () async {
+    newSubset.elements.clear();
+    newSubset.elements.addAll({newElement.name: newElement});
+    bool checkUpdate = await SubsetService().updateSubset(newSubset);
+    expect(checkUpdate, true);
   });
 }
