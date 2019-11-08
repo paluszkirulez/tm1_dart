@@ -105,4 +105,14 @@ void main() async {
     bool checkUpdate = await SubsetService().updateSubset(newSubset);
     expect(checkUpdate, true);
   });
+
+  // private subsets tests
+  test('get private dynamic subset from resource', () async {
+    String staticDynamicSubsetName = 'test_subset';
+    Subset actualSubset = await SubsetService()
+        .getSubset(
+        dimensionName, hierarchyName, staticDynamicSubsetName, private: true);
+    expect(actualSubset.name, staticDynamicSubsetName);
+  });
+
 }

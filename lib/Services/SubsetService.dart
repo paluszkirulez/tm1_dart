@@ -11,28 +11,31 @@ class SubsetService extends ObjectService {
   /// class servicing operation related to subsets
 
   //TODO push methods
-  Future<Subset> getSubset(
-      String dimensionName, String hierarchyName, String subsetName) async {
+  Future<Subset> getSubset(String dimensionName, String hierarchyName,
+      String subsetName,
+      {bool private = false}) async {
     Map<String, dynamic> parametersMap = {};
+    String subsetType = private ? 'PrivateSubsets' : 'Subsets';
     parametersMap.addAll({'\$select': '*,Alias'});
     var bodyReturned = await restConnection.runGet(
-        'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Subsets(\'$subsetName\')',
+        'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/$subsetType(\'$subsetName\')',
         parameters: parametersMap);
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
     //print(dimensionName+' '+decodedJson.toString()+' '+parametersMap.toString());
     Map<String, dynamic> objectMap = {};
     objectMap.addAll(decodedJson);
     Map<String, Element> mapOfElements =
-    await getElements(dimensionName, hierarchyName, subsetName);
+    await getElements(
+        dimensionName, hierarchyName, subsetName, private: private);
     objectMap.addAll({'Elements': mapOfElements});
     objectMap.addAll({'dimensionName': dimensionName});
     objectMap.addAll({'hierarchyName': hierarchyName});
+    objectMap.addAll({'private': private});
     Subset subset = Subset.fromJson(objectMap);
     bool isDynamic = false;
     if (![null, ''].contains(subset.expression)) {
       isDynamic = true;
     }
-
 
     subset.isDynamic = isDynamic;
     return subset;
@@ -40,14 +43,15 @@ class SubsetService extends ObjectService {
 
   Future<Map<String, Element>> getElements(String dimensionName,
       String hierarchyName, String subsetName,
-      {getControl}) async {
+      {getControl, bool private = false}) async {
     Map<String, dynamic> parametersMap = {};
     parametersMap.addAll({'\$select': 'Name,Type'});
-
-    var bodyReturned = await restConnection.runGet(
-        'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Subsets' +
-            '(\'${subsetName}\')/Elements',
-        parameters: parametersMap);
+    String subsetType = private ? 'PrivateSubsets' : 'Subsets';
+    String path =
+        'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/$subsetType' +
+            '(\'${subsetName}\')/Elements';
+    var bodyReturned =
+    await restConnection.runGet(path, parameters: parametersMap);
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
     List<dynamic> listOfStrings = decodedJson['value'];
     Map<String, Element> objectsMap = {};
@@ -63,11 +67,12 @@ class SubsetService extends ObjectService {
     return objectsMap;
   }
 
-  Future<bool> checkIfElementExists(String dimensionName,
-      String hierarchyName, String subsetName, String elementName,
-      {getControl = false}) async {
+  Future<bool> checkIfElementExists(String dimensionName, String hierarchyName,
+      String subsetName, String elementName,
+      {getControl = false, bool private = false}) async {
     Map<String, Element> mapElements = await getElements(
-        dimensionName, hierarchyName, subsetName, getControl: getControl);
+        dimensionName, hierarchyName, subsetName,
+        getControl: getControl, private: private);
     bool elementExists = false;
     if (mapElements.containsKey(elementName)) {
       elementExists = true;
@@ -76,16 +81,19 @@ class SubsetService extends ObjectService {
   }
 
   Future<bool> deleteElementFromSubset(String dimensionName,
-      String hierarchyName, String subsetName, String elementName) async {
-    Map<String, Element> mapElements = await getElements(
-        dimensionName, hierarchyName, subsetName);
+      String hierarchyName, String subsetName, String elementName,
+      {bool private = false}) async {
+    Map<String, Element> mapElements =
+    await getElements(dimensionName, hierarchyName, subsetName);
     bool elementDeleted = false;
+    String subsetType = private ? 'PrivateSubsets' : 'Subsets';
     bool checkIfExist = await checkIfElementExists(
         dimensionName, hierarchyName, subsetName, elementName);
     if (!checkIfExist) {
       return elementDeleted;
     }
-    var url = 'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Subsets(\'$subsetName\')/Elements(\'$elementName\')';
+    var url =
+        'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/$subsetType(\'$subsetName\')/Elements(\'$elementName\')';
     HttpClientResponse response = await restConnection.runDelete(url);
     if ((response.statusCode >= 200) & (response.statusCode <= 230)) {
       elementDeleted = true;
@@ -97,12 +105,11 @@ class SubsetService extends ObjectService {
     bool returnedResult = false;
     var body = subsetName.body();
     String path = subsetName.createTM1Path() + '(\'${subsetName.name}\')';
-    HttpClientResponse response = await restConnection.runUpdate(
-        path, {}, body);
+    HttpClientResponse response =
+    await restConnection.runUpdate(path, {}, body);
     if ((response.statusCode >= 200) & (response.statusCode <= 230)) {
       returnedResult = true;
     }
     return returnedResult;
   }
-
 }

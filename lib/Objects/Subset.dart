@@ -41,7 +41,8 @@ class Subset extends TM1Object {
 
   @override
   String createTM1Path() {
-    return 'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Subsets';
+    String subsetType = private ? 'PrivateSubsets' : 'Subsets';
+    return 'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/$subsetType';
   }
 
   @override
