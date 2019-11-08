@@ -102,7 +102,7 @@ void main() async {
   test('update subset', () async {
     newSubset.elements.clear();
     newSubset.elements.addAll({newElement.name: newElement});
-    bool checkUpdate = await SubsetService().updateSubset(newSubset);
+    bool checkUpdate = await SubsetService().update(newSubset);
     expect(checkUpdate, true);
   });
 

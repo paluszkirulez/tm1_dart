@@ -73,5 +73,34 @@ class ElementService extends ObjectService {
     return listOfElement;
   }
 
+  Element _simpleCreate(String dimensionName, String hierarchyName,
+      String elementName, {String type: 'Numeric'}) {
+    Map<String, dynamic> mapForElement = {};
+    mapForElement.addAll({'dimensionName': dimensionName});
+    mapForElement.addAll({'hierarchyName': hierarchyName});
+    mapForElement.addAll({'Name': elementName});
+    mapForElement.addAll({'Type': type});
+    Element element = Element.fromJson(mapForElement);
+    return element;
+  }
+
+  Future<bool> createElement(String dimensionName, String hierarchyName,
+      String elementName, {String type: 'Numeric'}) {
+    Element element = _simpleCreate(
+        dimensionName, hierarchyName, elementName, type: type);
+    var created = create(element);
+    return created;
+  }
+
+  Future<bool> deleteElement(String dimensionName, String hierarchyName,
+      String elementName, {String type: 'Numeric'}) {
+    Element element = _simpleCreate(
+        dimensionName, hierarchyName, elementName, type: type);
+    var deleted = delete(element);
+    return deleted;
+  }
+
+
+
 
 }

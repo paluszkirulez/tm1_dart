@@ -15,7 +15,7 @@ class Element extends TM1Object {
   @JsonKey(name: 'UniqueName')
   final String uniqueName;
   @JsonKey(name: 'Type')
-  final String elementType;
+  String elementType;
   @JsonKey(name: 'Index')
   final int index;
   @JsonKey(name: 'Level')

@@ -101,7 +101,7 @@ class SubsetService extends ObjectService {
     return elementDeleted;
   }
 
-  Future<bool> updateSubset(Subset subsetName) async {
+/*  Future<bool> update(TM1Object subsetName) async {
     bool returnedResult = false;
     var body = subsetName.body();
     String path = subsetName.createTM1Path() + '(\'${subsetName.name}\')';
@@ -111,5 +111,5 @@ class SubsetService extends ObjectService {
       returnedResult = true;
     }
     return returnedResult;
-  }
+  }*/
 }

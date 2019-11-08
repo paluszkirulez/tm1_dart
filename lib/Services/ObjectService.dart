@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:tm1_dart/Objects/TM1Object.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
@@ -74,5 +75,17 @@ abstract class ObjectService {
           {tempList[0]: tempList[1].replaceRange(0, 'Type: '.length, '')});
     }
     return nameTypeMap;
+  }
+
+  Future<bool> update(TM1Object objectName) async {
+    bool returnedResult = false;
+    var body = objectName.body();
+    String path = objectName.createTM1Path() + '(\'${objectName.name}\')';
+    HttpClientResponse response =
+    await restConnection.runUpdate(path, {}, body);
+    if ((response.statusCode >= 200) & (response.statusCode <= 230)) {
+      returnedResult = true;
+    }
+    return returnedResult;
   }
 }
