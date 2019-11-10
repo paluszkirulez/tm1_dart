@@ -8,12 +8,12 @@ part 'UnregSubset.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class UnregSubset extends Subset{
-  @JsonKey(name: 'Name')
-  final String name;
-  @JsonKey(name: 'UniqueName')
-  final String uniqueName;
-  @JsonKey(name: 'Alias')
-  final String alias;
+  @JsonKey(ignore: true)
+  final String name = '';
+  @JsonKey(ignore: true)
+  final String uniqueName = '';
+  @JsonKey(ignore: true)
+  final String alias = '';
   @JsonKey(name: 'dimensionName')
   final String dimensionName;
   @JsonKey(name: 'hierarchyName')
@@ -26,18 +26,18 @@ class UnregSubset extends Subset{
   @JsonKey(name: 'Attributes')
   Map<String, dynamic> attributes;
 
-  UnregSubset(this.name, this.uniqueName, this.dimensionName,
-      this.hierarchyName, this.alias, this.elements, this.expression,
-      this.isDynamic, this.attributes) :
-        super(
-          name,
-          uniqueName,
-          dimensionName,
-          hierarchyName,
-          alias,
-          elements,
-          expression,
-          attributes);
+  UnregSubset(this.dimensionName, this.hierarchyName, this.elements,
+      this.isDynamic, this.expression, this.attributes) : super(
+      '',
+      '',
+      dimensionName,
+      hierarchyName,
+      '',
+      elements,
+      expression,
+      attributes);
+
+
 
   factory UnregSubset.fromJson(Map<String, dynamic> json) =>
       _$UnregSubsetFromJson(json);
