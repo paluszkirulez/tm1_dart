@@ -40,10 +40,11 @@ class NativeView extends View {
             mdx.write(subset.expression + '} ');
           } else {
             StringBuffer uniqNames = StringBuffer('');
-            for (int i = 0; i < subset.elements.length; i++) {
+            List<String>tempListElements = subset.elements.keys.toList();
+            for (int i = 0; i < tempListElements.length; i++) {
               uniqNames.write(
-                  '[${subset.dimensionName}].[${subset.elements[i].name}]');
-              if (i < subset.elements.length - 1) {
+                  '[${subset.dimensionName}].[${tempListElements[i]}]');
+              if (i < tempListElements.length - 1) {
                 uniqNames.write(', ');
               }
             }

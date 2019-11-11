@@ -94,6 +94,6 @@ void main() async {
         [viewAxisSelection2]);
     var expectedMDX = "{\"@odata.type\": \"ibm.tm1.api.v1.NativeView\",\"Name\": \"temp view\",\"Columns\": [{\"Subset\":{\"Hierarchy@odata.bind\":\"Dimensions(\'month\')/Hierarchies(\'month\')\",\"Elements@odata.bind\":[\"Dimensions(\'month\')/Hierarchies(\'month\')/Elements(\'Jan\')\",\"Dimensions(\'month\')/Hierarchies(\'month\')/Elements(\'Feb\')\",\"Dimensions(\'month\')/Hierarchies(\'month\')/Elements(\'Mar\')\"]}}], \"Rows\": [{\"Subset\":{\"Hierarchy@odata.bind\":\"Dimensions(\'account2\')/Hierarchies(\'account2\')\",\"Expression\":\"[account2].[bdg]\"}}], \"Titles\": [{\"Subset@odata.bind\":\"Dimensions(\'actvsbud\')/Hierarchies(\'actvsbud\')/Subsets(\'All Members\')\",\"Selected@odata.bind\":\"Dimensions(\'actvsbud\')/Hierarchies(\'actvsbud\')/Elements(\'Actual\')\"},{\"Subset@odata.bind\":\"Dimensions(\'region\')/Hierarchies(\'region\')/Subsets(\'Europe\')\",\"Selected@odata.bind\":\"Dimensions(\'region\')/Hierarchies(\'region\')/Elements(\'World\')\"}], \"SuppressEmptyColumns\": true,\"SuppressEmptyRows\":true,\"FormatString\":\"0.#########\"}"
         .trim();
-    expect(nativeViewTest.body().trim(), expectedMDX);
+    expect(nativeViewTest.body(), expectedMDX);
   });
 }

@@ -9,7 +9,7 @@ part 'UnregSubset.g.dart';
 @JsonSerializable(explicitToJson: true)
 class UnregSubset extends Subset{
   @JsonKey(ignore: true)
-  final String name = '';
+  String name = '';
   @JsonKey(ignore: true)
   final String uniqueName = '';
   @JsonKey(ignore: true)
