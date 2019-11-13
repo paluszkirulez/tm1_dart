@@ -14,12 +14,15 @@ class HierarchyService extends ObjectService {
   //TODO get all subsets within given hierarchy
   Future<Hierarchy> getHierarchy(
       String dimensionName, String hierarchyName) async {
+    Map<String, dynamic> parameters = {'\$expand': 'Dimension(\$select=Name)'};
     var bodyReturned = await restConnection.runGet(
-        'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')');
+        'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')',
+        parameters: parameters);
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
 
     Map<String, dynamic> objectMap = {};
     objectMap.addAll(decodedJson);
+    print(objectMap);
     objectMap.addAll(
         {'Elements': await getElements(dimensionName, hierarchyName)});
     objectMap.addAll(

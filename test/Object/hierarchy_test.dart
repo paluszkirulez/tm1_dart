@@ -13,9 +13,9 @@ class MockHierarchy extends Mock implements Hierarchy {}
 
 //var hierarchy = MockHierarchy();
 
-class MockHierarchyService extends Mock implements HierarchyService {}
+/*class MockHierarchyService extends Mock implements HierarchyService {}
 
-var hirarchyService = MockHierarchy();
+var hirarchyService = MockHierarchy();*/
 
 void main() async {
   String ip = await getIp();
@@ -57,7 +57,7 @@ void main() async {
   String dimensionName2 = 'actvsbud';
   String hierarchyName2 = 'actvsbud';
   Hierarchy hierarchy2 = Hierarchy.fromJson(
-      {'dimensionName': dimensionName2, 'Name': name});
+      {'Dimension': {'Name': dimensionName2}, 'Name': name});
 
   test('check if hierarchy creation works', () async {
     var printout = await HierarchyService().create(hierarchy2);
