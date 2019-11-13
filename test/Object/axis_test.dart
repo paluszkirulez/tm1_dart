@@ -40,29 +40,31 @@ void main() async {
     'Level': 0
   };
   String elementName = 'Price';
-  Element element = await ElementService().getElement(
-      hierName, dimName, elementName);
+  Element element =
+  await ElementService().getElement(hierName, dimName, elementName);
   String staticSubsetName = 'Default';
-  Subset testingSubsetWithElements = await SubsetService().getSubset(
-      dimName, hierName, staticSubsetName);
-
-
+  Subset testingSubsetWithElements =
+  await SubsetService().getSubset(dimName, hierName, staticSubsetName);
 
   test('check if subset named axes is correctly created', () async {
     ViewAxisSelection testSelection =
-    ViewAxisSelection(testingSubsetWithElements, dimName, hierName);
+    ViewAxisSelection(testingSubsetWithElements);
     var actualString =
-        '{"Subset@odata.bind":"Dimensions(\'$dimName\')/Hierarchies(\'$hierName\')/Subsets(\'${testingSubsetWithElements
-        .name}\')"}';
+        '{"Subset@odata.bind":"Dimensions(\'${testingSubsetWithElements
+        .dimensionName}\')/Hierarchies(\'${testingSubsetWithElements
+        .hierarchyName}\')/Subsets(\'${testingSubsetWithElements.name}\')"}';
     expect(testSelection.body(), actualString);
   });
   test('check if named subset with select is correctly created', () async {
     ViewTitleSelection testSelection =
-    ViewTitleSelection(testingSubsetWithElements, dimName, hierName, 'Actual');
+    ViewTitleSelection(testingSubsetWithElements, 'Actual');
     var actualString =
-        '{"Subset@odata.bind":"Dimensions(\'$dimName\')/Hierarchies(\'$hierName\')/Subsets(\'${testingSubsetWithElements
-        .name}\')",'
-        '"Selected@odata.bind":"Dimensions(\'$dimName\')/Hierarchies(\'$hierName\')/Elements(\'Actual\')"}';
+        '{"Subset@odata.bind":"Dimensions(\'${testingSubsetWithElements
+        .dimensionName}\')/Hierarchies(\'${testingSubsetWithElements
+        .hierarchyName}\')/Subsets(\'${testingSubsetWithElements.name}\')",'
+        '"Selected@odata.bind":"Dimensions(\'${testingSubsetWithElements
+        .dimensionName}\')/Hierarchies(\'${testingSubsetWithElements
+        .hierarchyName}\')/Elements(\'Actual\')"}';
     expect(testSelection.body(), actualString);
   });
   /*test('check if axis without subset is correctly created', () async {
@@ -76,9 +78,11 @@ void main() async {
   //TODO check how elements based subset should be created and what is the output
   test('check if axis with elements is correctly created', () async {
     ViewAxisSelection testSelection =
-    ViewAxisSelection(testingSubsetWithElements, dimName, hierName);
+    ViewAxisSelection(testingSubsetWithElements);
     var actualString =
-        '{"Subset":{"Hierarchy@odata.bind":"Dimensions(\'$dimName\')/Hierarchies(\'$hierName\')","Expression":"${testingSubsetWithElements
+        '{"Subset":{"Hierarchy@odata.bind":"Dimensions(\'${testingSubsetWithElements
+        .dimensionName}\')/Hierarchies(\'${testingSubsetWithElements
+        .hierarchyName}\')","Expression":"${testingSubsetWithElements
         .elements}"}}';
     expect(testSelection.body(), actualString);
   });

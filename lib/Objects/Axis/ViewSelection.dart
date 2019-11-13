@@ -4,12 +4,14 @@ import 'package:tm1_dart/Objects/Subset.dart';
 import 'package:tm1_dart/Objects/TM1Object.dart';
 import 'package:tm1_dart/Objects/UnregSubset.dart';
 
-abstract class ViewSelection extends TM1Object {
+class ViewSelection extends TM1Object {
   Subset subset;
-  String dimensionName;
-  String hierarchyName;
 
-  ViewSelection(this.subset, this.dimensionName, this.hierarchyName);
+  ViewSelection(this.subset);
+
+  factory ViewSelection.fromJson(Map<String, dynamic> json) {
+    return ViewSelection(json['Subset'] as Subset);
+  }
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> preparedBody = {};
@@ -28,6 +30,7 @@ abstract class ViewSelection extends TM1Object {
 
   @override
   String createTM1Path() {
-    return 'Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Subsets(\'${subset.name}\')';
+    return 'Dimensions(\'${subset.dimensionName}\')/Hierarchies(\'${subset
+        .hierarchyName}\')/Subsets(\'${subset.name}\')';
   }
 }

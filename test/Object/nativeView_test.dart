@@ -7,6 +7,7 @@ import 'package:tm1_dart/Objects/UnregSubset.dart';
 import 'package:tm1_dart/Objects/View/NativeView.dart';
 import 'package:tm1_dart/Services/ElementService.dart';
 import 'package:tm1_dart/Services/RESTConnection.dart';
+import 'package:tm1_dart/Services/ViewService.dart';
 
 import '../UtilsForTest/ConnectionUtils.dart';
 
@@ -68,14 +69,14 @@ void main() async {
         'Alias': ''
       });
   ViewTitleSelection viewTitleSelection1 =
-      ViewTitleSelection(subsetTitle1, 'actvsbud', 'actvsbud', 'Actual');
+  ViewTitleSelection(subsetTitle1, 'Actual');
   ViewTitleSelection viewTitleSelection2 =
-      ViewTitleSelection(subsetTitle2, 'region', 'region', 'World');
+  ViewTitleSelection(subsetTitle2, 'World');
   //TODO - dim and hirarchy should be retrieved from subset
   ViewAxisSelection viewAxisSelection2 =
-      ViewAxisSelection(subsetMonth1, 'month', 'month');
+  ViewAxisSelection(subsetMonth1);
   ViewAxisSelection viewAxisSelection1 =
-      ViewAxisSelection(subsetAccount2, 'account2', 'account2');
+  ViewAxisSelection(subsetAccount2);
 
   test('check if mdx is created correctly', () {
     NativeView nativeViewTest = NativeView('temp view', 'PNLCube', true, true, "0.#########", [viewAxisSelection1], [viewTitleSelection1,viewTitleSelection2], [viewAxisSelection2]);
@@ -95,5 +96,12 @@ void main() async {
     var expectedMDX = "{\"@odata.type\": \"ibm.tm1.api.v1.NativeView\",\"Name\": \"temp view\",\"Columns\": [{\"Subset\":{\"Hierarchy@odata.bind\":\"Dimensions(\'month\')/Hierarchies(\'month\')\",\"Elements@odata.bind\":[\"Dimensions(\'month\')/Hierarchies(\'month\')/Elements(\'Jan\')\",\"Dimensions(\'month\')/Hierarchies(\'month\')/Elements(\'Feb\')\",\"Dimensions(\'month\')/Hierarchies(\'month\')/Elements(\'Mar\')\"]}}], \"Rows\": [{\"Subset\":{\"Hierarchy@odata.bind\":\"Dimensions(\'account2\')/Hierarchies(\'account2\')\",\"Expression\":\"[account2].[bdg]\"}}], \"Titles\": [{\"Subset@odata.bind\":\"Dimensions(\'actvsbud\')/Hierarchies(\'actvsbud\')/Subsets(\'All Members\')\",\"Selected@odata.bind\":\"Dimensions(\'actvsbud\')/Hierarchies(\'actvsbud\')/Elements(\'Actual\')\"},{\"Subset@odata.bind\":\"Dimensions(\'region\')/Hierarchies(\'region\')/Subsets(\'Europe\')\",\"Selected@odata.bind\":\"Dimensions(\'region\')/Hierarchies(\'region\')/Elements(\'World\')\"}], \"SuppressEmptyColumns\": true,\"SuppressEmptyRows\":true,\"FormatString\":\"0.#########\"}"
         .trim();
     expect(nativeViewTest.body(), expectedMDX);
+  });
+
+  test('check if get nativeView works', () async {
+    NativeView nativeViewTest = await ViewService().getNativeView(
+        'PNLCube', 'Another view');
+
+    expect(nativeViewTest.titles[0].selected, 'Variance');
   });
 }

@@ -7,6 +7,7 @@ part 'View.g.dart';
 class View extends TM1Object {
   final String name;
   final String cubeName;
+  bool private = false;
 
 
   View(this.name, this.cubeName);
@@ -17,7 +18,8 @@ class View extends TM1Object {
 
   @override
   String createTM1Path() {
-    return 'api/v1/Cubes\'$cubeName\')/Views';
+    String privateName = private ? 'PrivateViews' : 'Views';
+    return 'api/v1/Cubes(\'$cubeName\')/$privateName';
   }
 
   @override

@@ -25,6 +25,20 @@ class NativeView extends View {
       this.titles,
       this.columns) :super(name, cubeName);
 
+  factory NativeView.fromJson(Map<String, dynamic> json,
+      List<ViewAxisSelection> rows, List<ViewTitleSelection> titles,
+      List<ViewAxisSelection> columns){
+    return NativeView(
+        json['Name'] as String,
+        json['cubeName'] as String,
+        json['SupressEmptyColumns'] as bool,
+        json['SupressEmptyRows'] as bool,
+        json['FormatString'] as String,
+        rows,
+        titles,
+        columns);
+  }
+
   String prepareMDXQueryView() {
     List<List<ViewAxisSelection>> axisList = [columns, rows];
     StringBuffer mdx = StringBuffer('SELECT ');
@@ -71,7 +85,8 @@ class NativeView extends View {
     if (titles.length > 0) {
       StringBuffer uniqNames = StringBuffer('');
       for (int i = 0; i < titles.length; i++) {
-        uniqNames.write('[${titles[i].dimensionName}].[${titles[i].selected}]');
+        uniqNames.write(
+            '[${titles[i].subset.dimensionName}].[${titles[i].selected}]');
         if (i < titles.length - 1) {
           uniqNames.write(', ');
         }
