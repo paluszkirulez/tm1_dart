@@ -35,7 +35,7 @@ void main() async {
     Map<String, Element> actualList = await SubsetService().getElements(
         dimensionName, hierarchyName, staticSubsetName);
     var actual = actualList.keys.toList();
-    expect(actual, ['Actual2', 'Actual']);
+    expect(actual, ['Actual2']);
   });
 
   test('get subset from resource', () async {

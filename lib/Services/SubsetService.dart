@@ -16,7 +16,9 @@ class SubsetService extends ObjectService {
       {bool private = false}) async {
     Map<String, dynamic> parametersMap = {};
     String subsetType = private ? 'PrivateSubsets' : 'Subsets';
-    parametersMap.addAll({'\$select': '*,Alias'});
+    parametersMap.addAll({
+      '\$expand': 'Hierarchy(\$select=Name;\$expand=Dimension(\$select=Name))'
+    });
     var bodyReturned = await restConnection.runGet(
         'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/$subsetType(\'$subsetName\')',
         parameters: parametersMap);
@@ -28,8 +30,6 @@ class SubsetService extends ObjectService {
     await getElements(
         dimensionName, hierarchyName, subsetName, private: private);
     objectMap.addAll({'Elements': mapOfElements});
-    objectMap.addAll({'dimensionName': dimensionName});
-    objectMap.addAll({'hierarchyName': hierarchyName});
     objectMap.addAll({'private': private});
     Subset subset = Subset.fromJson(objectMap);
     bool isDynamic = false;

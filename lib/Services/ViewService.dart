@@ -58,6 +58,7 @@ class ViewService extends ObjectService {
       Map<String, dynamic> objectMap = title;
       Subset subset = Subset.fromJson(objectMap);
       String selected = objectMap['Selected']['Name'];
+      print(subset.dimensionName.toString());
       viewTitleSelectionList.add(ViewTitleSelection.fromJson(
           {'Subset': subset, 'Selected': selected}));
     }
