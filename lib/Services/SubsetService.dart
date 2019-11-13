@@ -17,19 +17,20 @@ class SubsetService extends ObjectService {
     Map<String, dynamic> parametersMap = {};
     String subsetType = private ? 'PrivateSubsets' : 'Subsets';
     parametersMap.addAll({
-      '\$expand': 'Hierarchy(\$select=Name;\$expand=Dimension(\$select=Name))'
+      '\$expand': 'Hierarchy(\$select=Name;\$expand=Dimension(\$select=Name)),Elements(\$select=*;\$expand: Hierarchy(\$select=Name;\$expand=Dimension(\$select=Name)))'
     });
     var bodyReturned = await restConnection.runGet(
         'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/$subsetType(\'$subsetName\')',
         parameters: parametersMap);
+
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
-    //print(dimensionName+' '+decodedJson.toString()+' '+parametersMap.toString());
     Map<String, dynamic> objectMap = {};
     objectMap.addAll(decodedJson);
-    Map<String, Element> mapOfElements =
-    await getElements(
-        dimensionName, hierarchyName, subsetName, private: private);
-    objectMap.addAll({'Elements': mapOfElements});
+    print(objectMap['Elements'][0]);
+    print(objectMap['Elements'][0]['Name']);
+
+    //TODO use elements from rest instead of elements from function
+    //objectMap.addAll({'Elements': mapOfElements});*/
     objectMap.addAll({'private': private});
     Subset subset = Subset.fromJson(objectMap);
     bool isDynamic = false;

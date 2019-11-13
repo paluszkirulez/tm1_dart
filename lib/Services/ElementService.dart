@@ -11,16 +11,15 @@ class ElementService extends ObjectService {
 
   Future<Element> getElement(String dimensionName, String hierarchyName,
       String elementName, {bool withAttributes = false}) async {
+    Map<String, dynamic> parameters = {
+      '\$expand': 'Hierarchy(\$select=Name;\$expand=Dimension(\$select=Name))'
+    };
     var bodyReturned = await restConnection.runGet(
-        'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Elements(\'$elementName\')');
+        'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/Elements(\'$elementName\')',
+        parameters: parameters);
     var decodedJson =  jsonDecode(await transformJson(bodyReturned));
-
-
     Map<String, dynamic> tempList = {};
     tempList.addAll(decodedJson);
-    tempList.addAll(
-        {'dimensionName': dimensionName, 'hierarchyName': hierarchyName});
-
     Element element =
     Element.fromJson(tempList);
     return element;
@@ -76,8 +75,9 @@ class ElementService extends ObjectService {
   Element _simpleCreate(String dimensionName, String hierarchyName,
       String elementName, {String type: 'Numeric'}) {
     Map<String, dynamic> mapForElement = {};
-    mapForElement.addAll({'dimensionName': dimensionName});
-    mapForElement.addAll({'hierarchyName': hierarchyName});
+    mapForElement.addAll({
+      'Hierarchy': {'Name': hierarchyName, 'Dimension': {'Name': dimensionName}}
+    });
     mapForElement.addAll({'Name': elementName});
     mapForElement.addAll({'Type': type});
     Element element = Element.fromJson(mapForElement);

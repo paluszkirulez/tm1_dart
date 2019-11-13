@@ -31,8 +31,7 @@ void main() async {
   var monthJson = {'Expression': ''};
   Map<String, dynamic> unregMap = {
     'Name': 'testName',
-    'dimensionName': dimName,
-    'hierarchyName': hierName,
+    'Hierarchy': {'Name': dimName, 'Dimension': {'Name': dimName}},
     'Elements': {
       element1.name: element1,
       element2.name: element2,
@@ -44,8 +43,7 @@ void main() async {
 
   var accountJson = {
     'Name': 'testName',
-    'dimensionName': 'account2',
-    'hierarchyName': 'account2',
+    'Hierarchy': {'Name': 'account2', 'Dimension': {'Name': 'account2'}},
     'Expression': '[account2].[bdg]'
   };
   UnregSubset subsetAccount2 =
@@ -53,8 +51,7 @@ void main() async {
   Subset subsetTitle1 = Subset.fromJson(
       {
         'Name': 'testName',
-        'dimensionName': 'actvsbud',
-        'hierarchyName': 'actvsbud',
+        'Hierarchy': {'Name': 'actvsbud', 'Dimension': {'Name': 'actvsbud'}},
         'Expression': '[actvsbud].Actual',
         'Name': 'All Members',
         'Alias': ''
@@ -62,8 +59,7 @@ void main() async {
   Subset subsetTitle2 = Subset.fromJson(
       {
         'Name': 'testName',
-        'dimensionName': 'region',
-        'hierarchyName': 'region',
+        'Hierarchy': {'Name': 'region', 'Dimension': {'Name': 'region'}},
         'Expression': '[region].World',
         'Name': 'Europe',
         'Alias': ''
