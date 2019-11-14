@@ -15,6 +15,7 @@ class NativeView extends View {
   List<ViewAxisSelection> rows;
   List<ViewTitleSelection> titles;
   List<ViewAxisSelection> columns;
+  bool private = false;
 
   NativeView(this.name,
       this.cubeName,
@@ -23,14 +24,14 @@ class NativeView extends View {
       this.format,
       this.rows,
       this.titles,
-      this.columns) :super(name, cubeName);
+      this.columns, {this.private}) :super(name, cubeName, private: private);
 
   factory NativeView.fromJson(Map<String, dynamic> json,
       List<ViewAxisSelection> rows, List<ViewTitleSelection> titles,
       List<ViewAxisSelection> columns){
     return NativeView(
         json['Name'] as String,
-        json['cubeName'] as String,
+        json['Cube']['Name'] as String,
         json['SupressEmptyColumns'] as bool,
         json['SupressEmptyRows'] as bool,
         json['FormatString'] as String,

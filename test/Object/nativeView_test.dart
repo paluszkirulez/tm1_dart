@@ -4,6 +4,7 @@ import 'package:tm1_dart/Objects/Axis/ViewTitleSelection.dart';
 import 'package:tm1_dart/Objects/Element.dart';
 import 'package:tm1_dart/Objects/Subset.dart';
 import 'package:tm1_dart/Objects/UnregSubset.dart';
+import 'package:tm1_dart/Objects/View/MdxView.dart';
 import 'package:tm1_dart/Objects/View/NativeView.dart';
 import 'package:tm1_dart/Services/ElementService.dart';
 import 'package:tm1_dart/Services/RESTConnection.dart';
@@ -94,7 +95,13 @@ void main() async {
   test('check if get nativeView works', () async {
     NativeView nativeViewTest = await ViewService().getNativeView(
         'PNLCube', 'Another view');
-
     expect(nativeViewTest.titles[0].selected, 'Variance');
   });
+  test('check if get mdx view works', () async {
+    MdxView mdxViewTest = await ViewService().getMdxView(
+        'PNLCube', 'TempViewByMDX');
+    String expectedString = 'SELECT NON EMPTY {[month].[Jan], [month].[Feb], [month].[Mar]} ON COLUMNS, NON EMPTY {[account2].AllMembers} ON ROWS FROM [PNLCube] where([actvsbud].[Actual], [region].[World])';
+    expect(mdxViewTest.MDX, expectedString);
+  });
+
 }

@@ -10,7 +10,7 @@ class View extends TM1Object {
   bool private = false;
 
 
-  View(this.name, this.cubeName);
+  View(this.name, this.cubeName, {this.private});
 
   factory View.fromJson(Map<String, dynamic> json) => _$ViewFromJson(json);
 

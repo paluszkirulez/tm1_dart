@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:tm1_dart/Objects/Axis/ViewAxisSelection.dart';
 import 'package:tm1_dart/Objects/Axis/ViewTitleSelection.dart';
 import 'package:tm1_dart/Objects/Subset.dart';
+import 'package:tm1_dart/Objects/View/MdxView.dart';
 import 'package:tm1_dart/Objects/View/NativeView.dart';
 import 'package:tm1_dart/Objects/View/View.dart';
 import 'package:tm1_dart/Utils/JsonConverter.dart';
@@ -85,18 +86,34 @@ class ViewService extends ObjectService {
       {bool private = false}) async {
     String privateName = private ? 'PrivateViews' : 'Views';
     String path = 'api/v1/Cubes(\'$cubeName\')/$privateName(\'$viewName\')';
-    var bodyReturned = await restConnection.runGet(path);
+    Map<String, dynamic> parametersMap = {'\$expand': '*'};
+    var bodyReturned = await restConnection.runGet(
+        path, parameters: parametersMap);
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
     Map<String, dynamic> objectMap = {};
     objectMap.addAll(decodedJson);
-    objectMap.addAll({'cubeName': cubeName});
+    //objectMap.addAll({'cubeName': cubeName});
     List<ViewTitleSelection> titles =
-        await _getTitle(cubeName, viewName, private: private);
+    await _getTitle(cubeName, viewName, private: private);
     List<ViewAxisSelection> rows =
-        await _getAxis(cubeName, viewName, axisType.Rows, private: private);
+    await _getAxis(cubeName, viewName, axisType.Rows, private: private);
     List<ViewAxisSelection> columns =
-        await _getAxis(cubeName, viewName, axisType.Columns, private: private);
+    await _getAxis(cubeName, viewName, axisType.Columns, private: private);
     NativeView view = NativeView.fromJson(objectMap, rows, titles, columns);
+    return view;
+  }
+
+  Future<MdxView> getMdxView(String cubeName, String viewName,
+      {bool private = false}) async {
+    String privateName = private ? 'PrivateViews' : 'Views';
+    String path = 'api/v1/Cubes(\'$cubeName\')/$privateName(\'$viewName\')';
+    Map<String, dynamic> parametersMap = {'\$expand': '*'};
+    var bodyReturned = await restConnection.runGet(
+        path, parameters: parametersMap);
+    var decodedJson = jsonDecode(await transformJson(bodyReturned));
+    Map<String, dynamic> objectMap = {};
+    objectMap.addAll(decodedJson);
+    MdxView view = MdxView.fromJson(objectMap);
     return view;
   }
 }
