@@ -20,7 +20,6 @@ void main() async {
       false);
 
   test('Check if element is get from server', () async {
-
     Element element =
     await ElementService().getElement('account1', 'account1', 'Price');
     expect(element.name, 'Price');
@@ -43,8 +42,8 @@ void main() async {
   });
 
   test('Check if element retrieves all members underneath', () async {
-    Element element = await ElementService().getElement(
-        'account1', 'account1', 'Gross Margin');
+    Element element = await ElementService()
+        .getElement('account1', 'account1', 'Gross Margin');
     var printout = await ElementService()
         .getMembersUnderConsolidation(element, maxDepth: 3);
     List<String> actualResult = printout.keys.toList();
@@ -58,8 +57,8 @@ void main() async {
       'Index': 0,
       'Level': 0
     };
-    Element element = await ElementService().getElement(
-        'account1', 'account1', 'Gross Margin');
+    Element element = await ElementService()
+        .getElement('account1', 'account1', 'Gross Margin');
     var printout = await ElementService()
         .getMembersUnderConsolidation(element, maxDepth: 3, leavesOnly: true);
     List<String> actualResult = printout.keys.toList();
@@ -67,22 +66,21 @@ void main() async {
   });
   String newName = random.randomString(5, from: 97, to: 122);
   test('create new element', () async {
-    bool created = await ElementService().createElement(
-        'account1', 'account1', newName);
+    bool created =
+    await ElementService().createElement('account1', 'account1', newName);
     expect(created, true);
   });
   test('update Element', () async {
-    Element element = await ElementService().getElement(
-        'account1', 'account1', newName);
+    Element element =
+    await ElementService().getElement('account1', 'account1', newName);
     element.elementType = 'String';
     bool updated = await ElementService().update(element);
     expect(updated, true);
   });
 
   test('deleted new element', () async {
-    bool deleted = await ElementService().deleteElement(
-        'account1', 'account1', newName);
+    bool deleted =
+    await ElementService().deleteElement('account1', 'account1', newName);
     expect(deleted, true);
   });
-
 }

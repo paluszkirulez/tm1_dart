@@ -32,7 +32,8 @@ void main() async {
   Map<String, dynamic> unregMap = {
     'Name': 'testName',
     'Hierarchy': {'Name': dimName, 'Dimension': {'Name': dimName}},
-    'Elements': [element1.toJson(), element2.toJson(), element3]
+    'Elements': [element1.toJson(), element2.toJson(), element3.toJson()]
+
   };
   unregMap.addAll(monthJson);
   UnregSubset subsetMonth1 = UnregSubset.fromJson(unregMap);

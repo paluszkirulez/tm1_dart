@@ -34,10 +34,9 @@ class ViewService extends ObjectService {
         : '';
     Map<String, dynamic> nativeViewParameters = {
       '\$expand':
-          'tm1.NativeView/$axis/Subset(\$expand=Hierarchy(\$select=Name;\$expand=Dimension(\$select=Name)),Elements(\$select=Name);\$select=Expression,UniqueName,Name, Alias)' +
+      'tm1.NativeView/$axis/Subset(\$expand=Hierarchy(\$select=Name;\$expand=Dimension(\$select=Name)),Elements(\$select=*;\$expand: Hierarchy(\$select=Name;\$expand=Dimension(\$select=Name)));\$select=Expression,UniqueName,Name, Alias)' +
               titlesAdd
     };
-    print(nativeViewParameters);
     String privateName = private ? 'PrivateViews' : 'Views';
     String path = 'api/v1/Cubes(\'$cubeName\')/$privateName(\'$viewName\')';
     var bodyReturned =
@@ -45,7 +44,6 @@ class ViewService extends ObjectService {
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
     var axisDecoded = decodedJson[axis];
     List<dynamic> objectList = axisDecoded;
-    //print(objectMap.toString());
     return objectList;
   }
 
@@ -57,11 +55,11 @@ class ViewService extends ObjectService {
     List<ViewTitleSelection> viewTitleSelectionList = [];
     for (var title in objectList) {
       Map<String, dynamic> objectMap = title['Subset'];
-      print(objectMap);
+
       Subset subset = Subset.fromJson(objectMap);
       //todo get elements as a map not just list
-      String selected = objectMap['Selected']['Name'];
-      print(subset.dimensionName.toString());
+      String selected = title['Selected']['Name'];
+
       viewTitleSelectionList.add(ViewTitleSelection.fromJson(
           {'Subset': subset, 'Selected': selected}));
     }

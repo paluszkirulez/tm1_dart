@@ -85,7 +85,7 @@ class SubsetService extends ObjectService {
     String subsetType = private ? 'PrivateSubsets' : 'Subsets';
     bool checkIfExist = await checkIfElementExists(
         dimensionName, hierarchyName, subsetName, elementName);
-    print(checkIfExist);
+
     if (!checkIfExist) {
       return elementDeleted;
     }
