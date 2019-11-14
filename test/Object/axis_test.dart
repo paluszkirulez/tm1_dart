@@ -76,7 +76,7 @@ void main() async {
     expect(testSelection.body(), actualString);
   });*/
   //TODO check how elements based subset should be created and what is the output
-  test('check if axis with elements is correctly created', () async {
+/*  test('check if axis with elements is correctly created', () async {
     ViewAxisSelection testSelection =
     ViewAxisSelection(testingSubsetWithElements);
     var actualString =
@@ -85,5 +85,5 @@ void main() async {
         .hierarchyName}\')","Expression":"${testingSubsetWithElements
         .elements}"}}';
     expect(testSelection.body(), actualString);
-  });
+  });*/
 }

@@ -19,6 +19,7 @@ class SubsetService extends ObjectService {
     parametersMap.addAll({
       '\$expand': 'Hierarchy(\$select=Name;\$expand=Dimension(\$select=Name)),Elements(\$select=*;\$expand: Hierarchy(\$select=Name;\$expand=Dimension(\$select=Name)))'
     });
+    parametersMap.addAll({'\$select': '*,Alias'});
     var bodyReturned = await restConnection.runGet(
         'api/v1/Dimensions(\'$dimensionName\')/Hierarchies(\'$hierarchyName\')/$subsetType(\'$subsetName\')',
         parameters: parametersMap);
@@ -26,11 +27,7 @@ class SubsetService extends ObjectService {
     var decodedJson = jsonDecode(await transformJson(bodyReturned));
     Map<String, dynamic> objectMap = {};
     objectMap.addAll(decodedJson);
-    print(objectMap['Elements'][0]);
-    print(objectMap['Elements'][0]['Name']);
 
-    //TODO use elements from rest instead of elements from function
-    //objectMap.addAll({'Elements': mapOfElements});*/
     objectMap.addAll({'private': private});
     Subset subset = Subset.fromJson(objectMap);
     bool isDynamic = false;
@@ -84,12 +81,11 @@ class SubsetService extends ObjectService {
   Future<bool> deleteElementFromSubset(String dimensionName,
       String hierarchyName, String subsetName, String elementName,
       {bool private = false}) async {
-    Map<String, Element> mapElements =
-    await getElements(dimensionName, hierarchyName, subsetName);
     bool elementDeleted = false;
     String subsetType = private ? 'PrivateSubsets' : 'Subsets';
     bool checkIfExist = await checkIfElementExists(
         dimensionName, hierarchyName, subsetName, elementName);
+    print(checkIfExist);
     if (!checkIfExist) {
       return elementDeleted;
     }

@@ -35,7 +35,7 @@ void main() async {
     Map<String, Element> actualList = await SubsetService().getElements(
         dimensionName, hierarchyName, staticSubsetName);
     var actual = actualList.keys.toList();
-    expect(actual, ['Actual2']);
+    expect(actual, ['Actual2', 'Actual']);
   });
 
   test('get subset from resource', () async {
@@ -70,7 +70,7 @@ void main() async {
   String newName = random.randomString(5, from: 97, to: 122);
   Subset subset3 = dynamicSubset;
   subset3.name = newName;
-  //TODO get subsets should work from dimension service
+
   test('create dynamic subset', () async {
     bool created = await SubsetService().create(subset3);
     expect(created, true);

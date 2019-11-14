@@ -13,9 +13,13 @@ abstract class ObjectService {
     var request = tm1object.createTM1Path();
     String body = tm1object.body();
 
+
     if (!await checkIfExists(tm1object)) {
-      await restConnection.runPost(request, {}, body);
-      return true;
+      HttpClientResponse response = await restConnection.runPost(
+          request, {}, body);
+      if ((response.statusCode >= 200) & (response.statusCode <= 230)) {
+        return true;
+      }
     } else {
       return false;
     }
@@ -55,7 +59,10 @@ abstract class ObjectService {
     Map<String, dynamic> params = {
       '\$filter': 'Name eq \'${objectClass.name}\''
     };
+    //print(baseURL);
+    //print(params);
     var bodyReturned = await restConnection.runGet(baseURL, parameters: params);
+
     var checkedValue = await transformJson(bodyReturned);
 
     if (checkedValue == '0') {

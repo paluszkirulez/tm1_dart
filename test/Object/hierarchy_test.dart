@@ -61,7 +61,6 @@ void main() async {
 
   test('check if hierarchy creation works', () async {
     var printout = await HierarchyService().create(hierarchy2);
-    print(name);
     expect(printout, true);
   });
   test('check if hierarchy deletion works', () async {
@@ -80,11 +79,11 @@ void main() async {
   });
   test('get all subsets for a given hierarchy', () async {
     List<Subset> actualResult = await HierarchyService().getSubsets(
-        dimensionName, hierarchyName);
+        'account1', 'account1');
 
     List<String> actualName = actualResult.map((a) => a.name).toList();
     expect(actualName,
-        ['All Members', 'Subset1', 'test_alias', 'test_subset_public']);
+        ['All Members', 'Default']);
   });
   test('get number of elements', () async {
     var actualResult = await HierarchyService().getNumberOfElements(
@@ -93,8 +92,8 @@ void main() async {
   });
   test('get number of subsets', () async {
     var actualResult = await HierarchyService().getNumberOfSubsets(
-        dimensionName, hierarchyName);
-    expect(actualResult, 4);
+        'account1', 'account1');
+    expect(actualResult, 2);
   });
 
 
@@ -129,8 +128,5 @@ void main() async {
         dimensionName, hierarchyName, false);
     expect(changed, true);
   });
-  //TODO add getter for hierarchy details
-  //TODO add post/update methods
-
 }
 //hierarchy tests

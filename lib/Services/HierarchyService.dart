@@ -22,7 +22,6 @@ class HierarchyService extends ObjectService {
 
     Map<String, dynamic> objectMap = {};
     objectMap.addAll(decodedJson);
-    print(objectMap);
     objectMap.addAll(
         {'Elements': await getElements(dimensionName, hierarchyName)});
     objectMap.addAll(
