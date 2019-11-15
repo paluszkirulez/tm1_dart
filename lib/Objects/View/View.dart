@@ -5,7 +5,7 @@ part 'View.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class View extends TM1Object {
-  final String name;
+  String name;
   final String cubeName;
   bool private = false;
 

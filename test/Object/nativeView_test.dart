@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:random_string/random_string.dart' as random;
 import 'package:tm1_dart/Objects/Axis/ViewAxisSelection.dart';
 import 'package:tm1_dart/Objects/Axis/ViewTitleSelection.dart';
 import 'package:tm1_dart/Objects/Element.dart';
@@ -19,7 +20,7 @@ void main() async {
   String ip = await getIp();
   RESTConnection restConnection = RESTConnection.initialize(
       "https", ip, 8010, "admin", "apple", true, "", false, false);
-  String cubeName = 'PNLCube';
+
   String dimName = 'month';
   String hierName = 'month';
   String el1 = 'Jan';
@@ -66,14 +67,21 @@ void main() async {
   ViewTitleSelection(subsetTitle1, 'Actual');
   ViewTitleSelection viewTitleSelection2 =
   ViewTitleSelection(subsetTitle2, 'World');
-  //TODO - dim and hirarchy should be retrieved from subset
+
   ViewAxisSelection viewAxisSelection2 =
   ViewAxisSelection(subsetMonth1);
   ViewAxisSelection viewAxisSelection1 =
   ViewAxisSelection(subsetAccount2);
-
+  NativeView nativeViewTest = NativeView(
+      'temp view',
+      'PNLCube',
+      true,
+      true,
+      "0.#########",
+      [viewAxisSelection1],
+      [viewTitleSelection1, viewTitleSelection2],
+      [viewAxisSelection2]);
   test('check if mdx is created correctly', () {
-    NativeView nativeViewTest = NativeView('temp view', 'PNLCube', true, true, "0.#########", [viewAxisSelection1], [viewTitleSelection1,viewTitleSelection2], [viewAxisSelection2]);
     var expectedMDX = "SELECT NON EMPTY {[month].[Jan], [month].[Feb], [month].[Mar]} ON COLUMNS, NON EMPTY {[account2].[bdg]} ON ROWS FROM [PNLCube] WHERE ([actvsbud].[Actual], [region].[World])";
     expect(nativeViewTest.prepareMDXQueryView(), expectedMDX);
   });
@@ -97,11 +105,38 @@ void main() async {
         'PNLCube', 'Another view');
     expect(nativeViewTest.titles[0].selected, 'Variance');
   });
+  MdxView mdxViewTest = await ViewService().getMdxView(
+      'PNLCube', 'TempViewByMDX');
   test('check if get mdx view works', () async {
-    MdxView mdxViewTest = await ViewService().getMdxView(
-        'PNLCube', 'TempViewByMDX');
     String expectedString = 'SELECT NON EMPTY {[month].[Jan], [month].[Feb], [month].[Mar]} ON COLUMNS, NON EMPTY {[account2].AllMembers} ON ROWS FROM [PNLCube] where([actvsbud].[Actual], [region].[World])';
     expect(mdxViewTest.MDX, expectedString);
+  });
+  String rname = random.randomString(5, from: 97, to: 122);
+
+  test('check if creating native view works', () async {
+    NativeView nativeView = nativeViewTest;
+    nativeView.name = rname;
+    bool created = await ViewService().create(nativeView);
+    expect(created, true);
+  });
+
+  test('check if deleting native view works', () async {
+    NativeView nativeView = nativeViewTest;
+    bool deleted = await ViewService().delete(nativeView);
+    expect(deleted, true);
+  });
+
+
+  test('check if creating mdx view works', () async {
+    MdxView mdxView = mdxViewTest;
+    mdxView.name = rname;
+    bool created = await ViewService().create(mdxView);
+    expect(created, true);
+  });
+  test('check if deleting mdx view works', () async {
+    MdxView mdxView = mdxViewTest;
+    bool deleted = await ViewService().delete(mdxView);
+    expect(deleted, true);
   });
 
 }

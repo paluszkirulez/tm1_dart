@@ -7,7 +7,7 @@ import 'package:tm1_dart/Objects/View/View.dart';
 class NativeView extends View {
   /// this is the abstracion of native view
 
-  final String name;
+  String name;
   final String cubeName;
   bool suppressEmptyColumns = true;
   bool suppressEmptyRows = true;
@@ -17,18 +17,16 @@ class NativeView extends View {
   List<ViewAxisSelection> columns;
   bool private = false;
 
-  NativeView(this.name,
-      this.cubeName,
-      this.suppressEmptyColumns,
-      this.suppressEmptyRows,
-      this.format,
-      this.rows,
-      this.titles,
-      this.columns, {this.private}) :super(name, cubeName, private: private);
+  NativeView(this.name, this.cubeName, this.suppressEmptyColumns,
+      this.suppressEmptyRows, this.format, this.rows, this.titles, this.columns,
+      {this.private = false})
+      : super(name, cubeName, private: private);
 
   factory NativeView.fromJson(Map<String, dynamic> json,
-      List<ViewAxisSelection> rows, List<ViewTitleSelection> titles,
-      List<ViewAxisSelection> columns){
+      List<ViewAxisSelection> rows,
+      List<ViewTitleSelection> titles,
+      List<ViewAxisSelection> columns,
+      {bool private = false}) {
     return NativeView(
         json['Name'] as String,
         json['Cube']['Name'] as String,
@@ -37,7 +35,8 @@ class NativeView extends View {
         json['FormatString'] as String,
         rows,
         titles,
-        columns);
+        columns,
+        private: private);
   }
 
   String prepareMDXQueryView() {
@@ -55,10 +54,10 @@ class NativeView extends View {
             mdx.write(subset.expression + '} ');
           } else {
             StringBuffer uniqNames = StringBuffer('');
-            List<String>tempListElements = subset.elements.keys.toList();
+            List<String> tempListElements = subset.elements.keys.toList();
             for (int i = 0; i < tempListElements.length; i++) {
-              uniqNames.write(
-                  '[${subset.dimensionName}].[${tempListElements[i]}]');
+              uniqNames
+                  .write('[${subset.dimensionName}].[${tempListElements[i]}]');
               if (i < tempListElements.length - 1) {
                 uniqNames.write(', ');
               }
@@ -98,7 +97,6 @@ class NativeView extends View {
     }
     return mdx.toString();
   }
-
 
   @override
   String body() {
