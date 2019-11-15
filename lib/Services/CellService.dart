@@ -143,9 +143,9 @@ class CellService extends ObjectService {
   }
 
   Future<dynamic> _executeMdx(String mdx,
-      {String cellProperties = '',
+      {List<String> cellProperties,
       String top = '',
-      skipContects = false}) async {
+        skipContexts = false}) async {
     /*Execute MDX and return the cells with their properties
         :param mdx: MDX Query, as string
         :param cell_properties: properties to be queried from the cell. E.g. Value, Ordinal, RuleDerived, ...
@@ -160,8 +160,56 @@ class CellService extends ObjectService {
     Map<String, dynamic> body = {'MDX': mdx};
     var response = await restConnection.runPost(path, {}, body.toString());
     var decodedJson = jsonDecode(await transformJson(response));
-
-    int cellsetId = decodedJson['ID'];
-    return cellsetId;
+    int cellSetId = decodedJson['ID'];
+    return cellSetId;
   }
+
+  Future<Map<String, dynamic>> _extractCellSet(int cellSetId,
+      {List<String> cellProperties,
+        bool deleteCellSet = true,
+        String top = '',
+        skipContexts = false}) {
+    cellProperties = cellProperties.isEmpty ? ['Value'] : cellProperties;
+
+    var rawCallSet = _extractCellSetRaw(cellSetId,
+        cellProperties: cellProperties,
+        elemProperties: ['UniqueName'],
+        memberProperties: ['UniqueName'],
+        top: top,
+        skipContexts: skipContexts,
+        deleteCellSet: deleteCellSet);
+
+    Future<Map<String, dynamic>> Content = _buildContentFromCellSet(
+        rawCallSet, top);
+  }
+
+  Future<Map<String, dynamic>> _extractCellSetRaw(int cellSetId,
+      {List<String> cellProperties,
+        List<String> elemProperties,
+        List<String> memberProperties,
+        String top = '',
+        bool skipContexts = false,
+        bool deleteCellSet}) async {
+    cellProperties = cellProperties.isEmpty ? ['Value'] : cellProperties;
+    memberProperties = memberProperties.isEmpty ? ['Name'] : memberProperties;
+    elemProperties = elemProperties.isEmpty ? [''] : elemProperties;
+    String selectMemberProperties = '\$select=' + memberProperties.join(',');
+    String expandElementProperties =
+        ';\$expand=Element(\$select=' + elemProperties.join(',') + ')';
+    String joinCellProperties = cellProperties.join(',');
+
+    String filterAxis = skipContexts ? '\$filter=Ordinal ne 2;' : '';
+
+    String path = '''
+/api/v1/Cellsets(\'$cellSetId\')?\$expand=Cube(\$select=Name;\$expand=Dimensions(\$select=Name)),
+Axes($filterAxis\$expand=Tuples(\$expand=Members($selectMemberProperties $expandElementProperties)\$top=$top)),
+Cells(\$select=$joinCellProperties\$top=$top)''';
+
+    var bodyReturned = await restConnection.runGet(path);
+    var decodedJson = jsonDecode(await transformJson(bodyReturned));
+    return decodedJson;
+  }
+
+  _buildContentFromCellSet(Future<Map<String, dynamic>> rawCallSet,
+      String top) {}
 }
